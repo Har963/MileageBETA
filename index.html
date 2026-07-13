@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Mileage</title>
+
+<style>
+body {
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    margin: 0;
+    background: #f5f7fa;
+    color: #222;
+}
+header {
+    background: #0078d4;
+    color: white;
+    padding: 16px;
+    text-align: center;
+    position: relative;
+}
+h1, h2 {
+    margin: 0 0 12px 0;
+}
+.card {
+    background: white;
+    margin: 16px;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+label {
+    margin-top: 12px;
+    display: block;
+    font-weight: 600;
+    font-size: 14px;
+}
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 4px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+button.primary {
+    width: 100%;
+    padding: 14px;
+    margin-top: 16px;
+    background: #0078d4;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 17px;
+}
+button.primary:active { opacity: 0.8; }
+button.secondary {
+    padding: 8px 12px;
+    margin-top: 8px;
+    background: white;
+    color: #0078d4;
+    border: 1px solid #0078d4;
+    border-radius: 8px;
+    font-size: 14px;
+}
+button.link {
+    background: none;
+    border: none;
+    color: #0078d4;
+    font-size: 14px;
+    padding: 0;
+    text-decoration: underline;
+}
+button.danger {
+    background: white;
+    color: #c62828;
+    border: 1px solid #c62828;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 13px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+td, th {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+    vertical-align: top;
+}
+footer {
+    padding: 16px;
+    text-align: center;
+    font-size: 12px;
+    color: #666;
+}
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+.badge.ok { background: #e6f4ea; color: #1e7e34; }
+.badge.bad { background: #fdecea; color: #c62828; }
+.badge.unknown { background: #eee; color: #666; }
+.error { color: #c62828; font-size: 14px; margin-top: 8px; }
+.muted { color: #666; font-size: 13px; }
+.hidden { display: none !important; }
+.vehicle-row {
+    border-bottom: 1px solid #eee;
+    padding: 12px 0;
+}
+.vehicle-row:last-child { border-bottom: none; }
+.vehicle-title { font-weight: 700; font-size: 15px; }
+.vehicle-actions { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
+#logoutBtn {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    background: rgba(255,255,255,0.15);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 13px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Business Mileage</h1>
+    <button id="logoutBtn" class="hidden">Log out</button>
+</header>
+
+<!-- ============ AUTH SECTION ============ -->
+<section id="authSection" class="card">
+    <div id="loginForm">
+        <h2>Log in</h2>
+        <label>Email</label>
+        <input type="email" id="loginEmail" autocomplete="username">
+        <label>Password</label>
+        <input type="password" id="loginPassword" autocomplete="current-password">
+        <button id="loginBtn" class="primary">Log in</button>
+        <p class="muted">No account yet?
+            <button class="link" id="showSignup">Create one</button>
+        </p>
+        <div id="loginError" class="error hidden"></div>
+    </div>
+
+    <div id="signupForm" class="hidden">
+        <h2>Create account</h2>
+        <label>Email</label>
+        <input type="email" id="signupEmail" autocomplete="username">
+        <label>Password</label>
+        <input type="password" id="signupPassword" autocomplete="new-password">
+        <p class="muted">At least 6 characters.</p>
+        <button id="signupBtn" class="primary">Create account</button>
+        <p class="muted">Already have an account?
+            <button class="link" id="showLogin">Log in</button>
+        </p>
+        <div id="signupError" class="error hidden"></div>
+        <div id="signupNotice" class="muted hidden"></div>
+    </div>
+</section>
+
+<!-- ============ APP SECTION (hidden until logged in) ============ -->
+<div id="appSection" class="hidden">
+
+    <section class="card">
+        <h2>Your garage</h2>
+
+        <label>Vehicle name (e.g. "My Golf")</label>
+        <input type="text" id="vehicleName">
+
+        <label>Registration number</label>
+        <input type="text" id="vehicleReg" style="text-transform:uppercase">
+
+        <button id="addVehicle" class="primary">Add vehicle</button>
+
+        <div id="vehicleList" style="margin-top:16px;"></div>
+    </section>
+
+    <section class="card">
+        <h2>Add journey</h2>
+
+        <label>Date</label>
+        <input type="date" id="date">
+
+        <label>From</label>
+        <input type="text" id="from">
+
+        <label>To</label>
+        <input type="text" id="to">
+
+        <label>Business purpose</label>
+        <input type="text" id="purpose">
+
+        <label>Miles</label>
+        <input type="number" id="miles" step="0.1">
+
+        <label>Vehicle</label>
+        <select id="vehicleSelect"></select>
+
+        <label>Rate (£/mile)</label>
+        <input type="number" id="rate" step="0.01" value="0.45">
+
+        <button id="add" class="primary">Add journey</button>
+    </section>
+
+    <section class="card">
+        <h2>Journeys</h2>
+        <table id="logTable">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Vehicle</th>
+                <th>Miles</th>
+                <th>Amount</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <section class="card">
+        <h2>Export</h2>
+        <p>Select a tax year and export a CSV.</p>
+        <label>Tax year</label>
+        <select id="taxYearSelect"></select>
+        <button id="exportYear" class="primary">Export selected tax year CSV</button>
+    </section>
+
+</div>
+
+<footer>
+    <small>Your data is stored securely in your account and only visible to you.</small>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// =========================================================
+// CONFIG — replace these two with your own Supabase project
+// values (Project Settings -> API in the Supabase dashboard).
+// =========================================================
+const SUPABASE_URL = "sb_publishable_3sUVq7uh-xguGl2-qMmO8Q_hou8k-zO";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3andndWNtbmVhZmZiYnRqYXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5NjAxOTEsImV4cCI6MjA5OTUzNjE5MX0.xwZpDdYLkUmfirKm3_7oGoWATMvTM6K49q2Y-8zb_z8";
+const DVLA_FUNCTION_URL = SUPABASE_URL + "/functions/v1/dvla-check";
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentUser = null;
+let vehiclesCache = [];
+let journeysCache = [];
+
+// ---------- Auth UI wiring ----------
+document.getElementById("showSignup").onclick = () => {
+    document.getElementById("loginForm").classList.add("hidden");
+    document.getElementById("signupForm").classList.remove("hidden");
+};
+document.getElementById("showLogin").onclick = () => {
+    document.getElementById("signupForm").classList.add("hidden");
+    document.getElementById("loginForm").classList.remove("hidden");
+};
+
+document.getElementById("loginBtn").onclick = async () => {
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+    const errEl = document.getElementById("loginError");
+    errEl.classList.add("hidden");
+
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) {
+        errEl.textContent = error.message;
+        errEl.classList.remove("hidden");
+    }
+};
+
+document.getElementById("signupBtn").onclick = async () => {
+    const email = document.getElementById("signupEmail").value.trim();
+    const password = document.getElementById("signupPassword").value;
+    const errEl = document.getElementById("signupError");
+    const noticeEl = document.getElementById("signupNotice");
+    errEl.classList.add("hidden");
+    noticeEl.classList.add("hidden");
+
+    const { error } = await sb.auth.signUp({ email, password });
+    if (error) {
+        errEl.textContent = error.message;
+        errEl.classList.remove("hidden");
+        return;
+    }
+    noticeEl.textContent = "Account created. Check your email to confirm it, then log in.";
+    noticeEl.classList.remove("hidden");
+};
+
+document.getElementById("logoutBtn").onclick = async () => {
+    await sb.auth.signOut();
+};
+
+sb.auth.onAuthStateChange((_event, session) => {
+    currentUser = session ? session.user : null;
+    if (currentUser) {
+        document.getElementById("authSection").classList.add("hidden");
+        document.getElementById("appSection").classList.remove("hidden");
+        document.getElementById("logoutBtn").classList.remove("hidden");
+        loadVehicles();
+        loadJourneys();
+    } else {
+        document.getElementById("authSection").classList.remove("hidden");
+        document.getElementById("appSection").classList.add("hidden");
+        document.getElementById("logoutBtn").classList.add("hidden");
+    }
+});
+
+// ---------- Tax year helpers (UK: 6 April - 5 April) ----------
+function getTaxYearKey(dateStr) {
+    const d = new Date(dateStr);
+    const year = d.getFullYear();
+    const taxYearStart = new Date(year, 3, 6);
+    if (d >= taxYearStart) {
+        return `${year}_${String(year + 1).slice(-2)}`;
+    } else {
+        return `${year - 1}_${String(year).slice(-2)}`;
+    }
+}
+function getTaxYearLabelFromKey(key) {
+    const [start, end] = key.split("_");
+    return `${start}-${end}`;
+}
+
+// ---------- Vehicles ("garage") ----------
+async function loadVehicles() {
+    const { data, error } = await sb
+        .from("vehicles")
+        .select("*")
+        .order("created_at", { ascending: true });
+    if (error) { console.error(error); return; }
+    vehiclesCache = data;
+    renderVehicles();
+    populateVehicleSelect();
+}
+
+function renderVehicles() {
+    const container = document.getElementById("vehicleList");
+    container.innerHTML = "";
+    if (!vehiclesCache.length) {
+        container.innerHTML = `<p class="muted">No vehicles yet — add one above.</p>`;
+        return;
+    }
+    vehiclesCache.forEach(v => {
+        const row = document.createElement("div");
+        row.className = "vehicle-row";
+        row.innerHTML = `
+            <div class="vehicle-title">${v.name} — ${v.registration}</div>
+            <div class="muted">
+                Tax: ${badge(v.tax_status)} ${v.tax_due_date ? "due " + v.tax_due_date : ""}
+                &nbsp;·&nbsp;
+                MOT: ${badge(v.mot_status)} ${v.mot_expiry_date ? "expires " + v.mot_expiry_date : ""}
+                ${v.last_checked ? `<br>Last checked: ${new Date(v.last_checked).toLocaleString()}` : ""}
+            </div>
+            <div class="vehicle-actions">
+                <button class="secondary" data-check="${v.id}">Check DVLA (tax &amp; MOT)</button>
+                <button class="danger" data-delete="${v.id}">Remove</button>
+            </div>
+        `;
+        container.appendChild(row);
+    });
+
+    container.querySelectorAll("[data-check]").forEach(btn => {
+        btn.onclick = () => checkDVLA(btn.getAttribute("data-check"));
+    });
+    container.querySelectorAll("[data-delete]").forEach(btn => {
+        btn.onclick = () => deleteVehicle(btn.getAttribute("data-delete"));
+    });
+}
+
+function badge(status) {
+    if (!status) return `<span class="badge unknown">Not checked</span>`;
+    const s = status.toLowerCase();
+    const good = s.includes("taxed") || s.includes("valid");
+    const cls = good ? "ok" : "bad";
+    return `<span class="badge ${cls}">${status}</span>`;
+}
+
+document.getElementById("addVehicle").onclick = async () => {
+    const name = document.getElementById("vehicleName").value.trim();
+    const registration = document.getElementById("vehicleReg").value.trim().toUpperCase();
+    if (!name || !registration) {
+        alert("Please enter a vehicle name and registration number.");
+        return;
+    }
+    const { error } = await sb.from("vehicles").insert({
+        user_id: currentUser.id,
+        name,
+        registration
+    });
+    if (error) { alert(error.message); return; }
+    document.getElementById("vehicleName").value = "";
+    document.getElementById("vehicleReg").value = "";
+    loadVehicles();
+};
+
+async function deleteVehicle(id) {
+    if (!confirm("Remove this vehicle? Journeys linked to it will keep their record but lose the vehicle link.")) return;
+    const { error } = await sb.from("vehicles").delete().eq("id", id);
+    if (error) { alert(error.message); return; }
+    loadVehicles();
+}
+
+async function checkDVLA(vehicleId) {
+    const vehicle = vehiclesCache.find(v => v.id === vehicleId);
+    if (!vehicle) return;
+
+    const { data: { session } } = await sb.auth.getSession();
+
+    try {
+        const res = await fetch(DVLA_FUNCTION_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${session.access_token}`
+            },
+            body: JSON.stringify({ registrationNumber: vehicle.registration })
+        });
+        const result = await res.json();
+
+        if (!res.ok) {
+            alert("DVLA check failed: " + (result.error || "Unknown error"));
+            return;
+        }
+
+        const { error } = await sb.from("vehicles").update({
+            tax_status: result.taxStatus || null,
+            tax_due_date: result.taxDueDate || null,
+            mot_status: result.motStatus || null,
+            mot_expiry_date: result.motExpiryDate || null,
+            make: result.make || null,
+            colour: result.colour || null,
+            last_checked: new Date().toISOString()
+        }).eq("id", vehicleId);
+
+        if (error) { alert(error.message); return; }
+        loadVehicles();
+    } catch (e) {
+        alert("Could not reach the DVLA check service. Has it been deployed and configured yet?");
+    }
+}
+
+function populateVehicleSelect() {
+    const select = document.getElementById("vehicleSelect");
+    select.innerHTML = "";
+    if (!vehiclesCache.length) {
+        const opt = document.createElement("option");
+        opt.textContent = "Add a vehicle first";
+        opt.value = "";
+        select.appendChild(opt);
+        return;
+    }
+    vehiclesCache.forEach(v => {
+        const opt = document.createElement("option");
+        opt.value = v.id;
+        opt.textContent = `${v.name} (${v.registration})`;
+        select.appendChild(opt);
+    });
+}
+
+// ---------- Journeys ----------
+async function loadJourneys() {
+    const { data, error } = await sb
+        .from("journeys")
+        .select("*, vehicles(name, registration)")
+        .order("date", { ascending: false });
+    if (error) { console.error(error); return; }
+    journeysCache = data;
+    renderTable();
+    populateTaxYearSelect();
+}
+
+function renderTable() {
+    const tbody = document.querySelector("#logTable tbody");
+    tbody.innerHTML = "";
+    journeysCache.forEach(e => {
+        const vehicleLabel = e.vehicles ? `${e.vehicles.name} (${e.vehicles.registration})` : "—";
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${e.date}</td>
+            <td>${e.from_location}</td>
+            <td>${e.to_location}</td>
+            <td>${vehicleLabel}</td>
+            <td>${Number(e.miles).toFixed(1)}</td>
+            <td>£${Number(e.amount).toFixed(2)}</td>
+            <td><button class="danger" data-del-journey="${e.id}">Delete</button></td>
+        `;
+        tbody.appendChild(row);
+    });
+    tbody.querySelectorAll("[data-del-journey]").forEach(btn => {
+        btn.onclick = async () => {
+            if (!confirm("Delete this journey?")) return;
+            const { error } = await sb.from("journeys").delete().eq("id", btn.getAttribute("data-del-journey"));
+            if (error) { alert(error.message); return; }
+            loadJourneys();
+        };
+    });
+}
+
+document.getElementById("add").onclick = async () => {
+    const date = document.getElementById("date").value;
+    const from_location = document.getElementById("from").value.trim();
+    const to_location = document.getElementById("to").value.trim();
+    const purpose = document.getElementById("purpose").value.trim();
+    const miles = parseFloat(document.getElementById("miles").value);
+    const vehicle_id = document.getElementById("vehicleSelect").value;
+    const rate = parseFloat(document.getElementById("rate").value);
+
+    if (!date || !from_location || !to_location || !purpose || !vehicle_id || isNaN(miles) || isNaN(rate)) {
+        alert("Please complete all fields (including selecting a vehicle from your garage).");
+        return;
+    }
+
+    const amount = miles * rate;
+
+    const { error } = await sb.from("journeys").insert({
+        user_id: currentUser.id,
+        vehicle_id,
+        date, from_location, to_location, purpose,
+        miles, rate, amount
+    });
+    if (error) { alert(error.message); return; }
+
+    clearForm();
+    loadJourneys();
+};
+
+function clearForm() {
+    document.getElementById("date").value = "";
+    document.getElementById("from").value = "";
+    document.getElementById("to").value = "";
+    document.getElementById("purpose").value = "";
+    document.getElementById("miles").value = "";
+}
+
+// ---------- Export ----------
+function populateTaxYearSelect() {
+    const select = document.getElementById("taxYearSelect");
+    const years = new Set(journeysCache.map(e => getTaxYearKey(e.date)));
+    const sortedKeys = Array.from(years).sort();
+    select.innerHTML = "";
+    sortedKeys.forEach(key => {
+        const opt = document.createElement("option");
+        opt.value = key;
+        opt.textContent = getTaxYearLabelFromKey(key);
+        select.appendChild(opt);
+    });
+}
+
+function generateCSV(entries) {
+    let csv = "Date,From,To,Purpose,Miles,Vehicle,Registration,Rate,Amount\n";
+    entries.forEach(e => {
+        const vName = e.vehicles ? e.vehicles.name : "";
+        const vReg = e.vehicles ? e.vehicles.registration : "";
+        csv += `${e.date},"${e.from_location.replace(/"/g, '""')}","${e.to_location.replace(/"/g, '""')}","${e.purpose.replace(/"/g, '""')}",${e.miles},"${vName}","${vReg}",${e.rate},${e.amount}\n`;
+    });
+    return csv;
+}
+
+document.getElementById("exportYear").onclick = () => {
+    const key = document.getElementById("taxYearSelect").value;
+    if (!key) { alert("No tax year selected."); return; }
+    const entriesForYear = journeysCache.filter(e => getTaxYearKey(e.date) === key);
+    if (!entriesForYear.length) { alert("No entries for that tax year."); return; }
+    downloadCSV(generateCSV(entriesForYear), `Mileage_${key}.csv`);
+};
+
+function downloadCSV(csv, fileName) {
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+</script>
+
+</body>
+</html>
