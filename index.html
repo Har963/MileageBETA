@@ -592,13 +592,6 @@ function downloadCSV(csv, fileName) {
     URL.revokeObjectURL(url);
 }
 </script>
-document.getElementById("showSignup").addEventListener("click", () => {
-    document.getElementById("loginForm").classList.add("hidden");
-    document.getElementById("signupForm").classList.remove("hidden");
-});
 
-document.getElementById("showLogin").addEventListener("click", () => {
-    document.getElementById("signupForm").classList.add("hidden");
-    document.getElementById("loginForm").classList.remove("hidden");
 </body>
 </html>
