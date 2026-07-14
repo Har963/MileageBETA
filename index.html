@@ -19,9 +19,8 @@ header {
     text-align: center;
     position: relative;
 }
-h1, h2 {
-    margin: 0 0 12px 0;
-}
+h1, h2, h3 { margin: 0 0 12px 0; }
+h3 { font-size: 15px; margin-top: 20px; }
 .card {
     background: white;
     margin: 16px;
@@ -71,6 +70,7 @@ button.link {
     font-size: 14px;
     padding: 0;
     text-decoration: underline;
+    cursor: pointer;
 }
 button.danger {
     background: white;
@@ -108,12 +108,20 @@ footer {
 .badge.bad { background: #fdecea; color: #c62828; }
 .badge.unknown { background: #eee; color: #666; }
 .error { color: #c62828; font-size: 14px; margin-top: 8px; }
+.setup-error {
+    color: #c62828;
+    font-size: 14px;
+    background: #fdecea;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 12px;
+    line-height: 1.5;
+}
+.setup-error code { background: #fff; padding: 1px 4px; border-radius: 4px; }
 .muted { color: #666; font-size: 13px; }
 .hidden { display: none !important; }
-.vehicle-row {
-    border-bottom: 1px solid #eee;
-    padding: 12px 0;
-}
+.vehicle-row { border-bottom: 1px solid #eee; padding: 12px 0; }
 .vehicle-row:last-child { border-bottom: none; }
 .vehicle-title { font-weight: 700; font-size: 15px; }
 .vehicle-actions { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
@@ -128,6 +136,22 @@ footer {
     padding: 6px 10px;
     font-size: 13px;
 }
+.stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 12px;
+}
+.stat {
+    background: #f5f7fa;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+}
+.stat-value { font-size: 20px; font-weight: 700; color: #0078d4; }
+.stat-label { font-size: 12px; color: #666; margin-top: 2px; }
+.threshold-note { margin-top: 10px; font-size: 13px; }
+canvas { max-width: 100%; }
 </style>
 </head>
 
@@ -148,7 +172,7 @@ footer {
         <input type="password" id="loginPassword" autocomplete="current-password">
         <button id="loginBtn" class="primary">Log in</button>
         <p class="muted">No account yet?
-            <button class="link" id="showSignup">Create one</button>
+            <button type="button" class="link" id="showSignup">Create one</button>
         </p>
         <div id="loginError" class="error hidden"></div>
     </div>
@@ -162,15 +186,32 @@ footer {
         <p class="muted">At least 6 characters.</p>
         <button id="signupBtn" class="primary">Create account</button>
         <p class="muted">Already have an account?
-            <button class="link" id="showLogin">Log in</button>
+            <button type="button" class="link" id="showLogin">Log in</button>
         </p>
         <div id="signupError" class="error hidden"></div>
         <div id="signupNotice" class="muted hidden"></div>
     </div>
+
+    <div id="configErrorBox"></div>
 </section>
 
 <!-- ============ APP SECTION (hidden until logged in) ============ -->
 <div id="appSection" class="hidden">
+
+    <section class="card">
+        <h2>Dashboard</h2>
+        <label>Tax year</label>
+        <select id="dashboardTaxYear"></select>
+
+        <div class="stat-grid" id="dashboardStats"></div>
+        <p class="threshold-note" id="thresholdNote"></p>
+
+        <h3>Monthly mileage</h3>
+        <canvas id="monthlyChart" height="180"></canvas>
+
+        <h3>Cumulative mileage this tax year</h3>
+        <canvas id="cumulativeChart" height="180"></canvas>
+    </section>
 
     <section class="card">
         <h2>Your garage</h2>
@@ -201,14 +242,22 @@ footer {
         <label>Business purpose</label>
         <input type="text" id="purpose">
 
+        <label>From postcode <span class="muted">(optional, for auto-calculating miles)</span></label>
+        <input type="text" id="fromPostcode" style="text-transform:uppercase" placeholder="e.g. PO1 3AX">
+
+        <label>To postcode</label>
+        <input type="text" id="toPostcode" style="text-transform:uppercase" placeholder="e.g. SW1A 1AA">
+
+        <button type="button" id="calcMiles" class="secondary" style="width:100%;">Calculate miles from postcodes</button>
+        <div id="calcMilesResult" class="muted" style="margin-top:6px;"></div>
+
         <label>Miles</label>
         <input type="number" id="miles" step="0.1">
 
         <label>Vehicle</label>
         <select id="vehicleSelect"></select>
 
-        <label>Rate (£/mile)</label>
-        <input type="number" id="rate" step="0.01" value="0.45">
+        <p class="muted">Rate is applied automatically: 55p/mile for the first 10,000 business miles in the tax year, then 25p/mile after that.</p>
 
         <button id="add" class="primary">Add journey</button>
     </section>
@@ -246,22 +295,14 @@ footer {
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script>
 // =========================================================
-// CONFIG — replace these two with your own Supabase project
-// values (Project Settings -> API in the Supabase dashboard).
+// These two toggle buttons are wired up FIRST, before anything
+// that touches Supabase. That way, even if the config below is
+// wrong, switching between "Log in" and "Create account" still
+// works instead of the whole page silently going dead.
 // =========================================================
-const SUPABASE_URL = "sb_publishable_3sUVq7uh-xguGl2-qMmO8Q_hou8k-zO";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3andndWNtbmVhZmZiYnRqYXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5NjAxOTEsImV4cCI6MjA5OTUzNjE5MX0.xwZpDdYLkUmfirKm3_7oGoWATMvTM6K49q2Y-8zb_z8";
-const DVLA_FUNCTION_URL = SUPABASE_URL + "/functions/v1/dvla-check";
-
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-let currentUser = null;
-let vehiclesCache = [];
-let journeysCache = [];
-
-// ---------- Auth UI wiring ----------
 document.getElementById("showSignup").onclick = () => {
     document.getElementById("loginForm").classList.add("hidden");
     document.getElementById("signupForm").classList.remove("hidden");
@@ -271,6 +312,56 @@ document.getElementById("showLogin").onclick = () => {
     document.getElementById("loginForm").classList.remove("hidden");
 };
 
+// =========================================================
+// CONFIG — replace these two with your own Supabase project
+// values (Project Settings -> API in the Supabase dashboard).
+// =========================================================
+const SUPABASE_URL = "https://wwjwgucmneaffbbtjavq.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3andndWNtbmVhZmZiYnRqYXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5NjAxOTEsImV4cCI6MjA5OTUzNjE5MX0.xwZpDdYLkUmfirKm3_7oGoWATMvTM6K49q2Y-8zb_z8";
+const DVLA_FUNCTION_URL = (SUPABASE_URL || "") + "/functions/v1/dvla-check";
+const DISTANCE_FUNCTION_URL = (SUPABASE_URL || "") + "/functions/v1/calc-distance";
+
+let sb = null;
+
+function showConfigError(message) {
+    document.getElementById("configErrorBox").innerHTML = `
+        <div class="setup-error">
+            <strong>Setup needed:</strong> ${message}
+        </div>`;
+    // Disable the buttons that need a working connection, rather than
+    // leaving them silently do nothing when clicked.
+    ["loginBtn", "signupBtn"].forEach(id => {
+        const el = document.getElementById(id);
+        el.disabled = true;
+        el.style.opacity = 0.5;
+    });
+}
+
+const looksUnconfigured =
+    !SUPABASE_URL || !SUPABASE_ANON_KEY ||
+    SUPABASE_URL.includes("YOUR_SUPABASE_URL") ||
+    SUPABASE_ANON_KEY.includes("YOUR_SUPABASE_ANON_KEY");
+
+if (looksUnconfigured) {
+    showConfigError(`This copy of the app isn't connected to a database yet. Open <code>index.html</code>, replace <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> near the top of the &lt;script&gt; tag with your real Supabase project values (Project Settings → API), save, and reload this page.`);
+} else {
+    try {
+        sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } catch (e) {
+        showConfigError(`Couldn't connect using the SUPABASE_URL / SUPABASE_ANON_KEY currently in <code>index.html</code> — double check they were copied correctly from Project Settings → API, with no extra spaces or quotes missing. (${e.message})`);
+    }
+}
+
+// Everything below only runs if we have a working Supabase client.
+if (sb) {
+
+let currentUser = null;
+let vehiclesCache = [];
+let journeysCache = [];
+let monthlyChartInstance = null;
+let cumulativeChartInstance = null;
+
+// ---------- Auth ----------
 document.getElementById("loginBtn").onclick = async () => {
     const email = document.getElementById("loginEmail").value.trim();
     const password = document.getElementById("loginPassword").value;
@@ -336,6 +427,9 @@ function getTaxYearLabelFromKey(key) {
     const [start, end] = key.split("_");
     return `${start}-${end}`;
 }
+function currentTaxYearKey() {
+    return getTaxYearKey(new Date().toISOString().slice(0, 10));
+}
 
 // ---------- Vehicles ("garage") ----------
 async function loadVehicles() {
@@ -362,9 +456,9 @@ function renderVehicles() {
         row.innerHTML = `
             <div class="vehicle-title">${v.name} — ${v.registration}</div>
             <div class="muted">
-                Tax: ${badge(v.tax_status)} ${v.tax_due_date ? "due " + v.tax_due_date : ""}
+                Tax: ${badge(v.tax_status, "tax")} ${v.tax_due_date ? "due " + v.tax_due_date : ""}
                 &nbsp;·&nbsp;
-                MOT: ${badge(v.mot_status)} ${v.mot_expiry_date ? "expires " + v.mot_expiry_date : ""}
+                MOT: ${badge(v.mot_status, "mot")} ${v.mot_expiry_date ? "expires " + v.mot_expiry_date : ""}
                 ${v.last_checked ? `<br>Last checked: ${new Date(v.last_checked).toLocaleString()}` : ""}
             </div>
             <div class="vehicle-actions">
@@ -383,10 +477,11 @@ function renderVehicles() {
     });
 }
 
-function badge(status) {
+function badge(status, kind) {
     if (!status) return `<span class="badge unknown">Not checked</span>`;
-    const s = status.toLowerCase();
-    const good = s.includes("taxed") || s.includes("valid");
+    // Exact match only — "Untaxed" contains the substring "taxed", so a
+    // loose match here would wrongly show untaxed vehicles as OK.
+    const good = kind === "tax" ? status === "Taxed" : status === "Valid";
     const cls = good ? "ok" : "bad";
     return `<span class="badge ${cls}">${status}</span>`;
 }
@@ -410,10 +505,11 @@ document.getElementById("addVehicle").onclick = async () => {
 };
 
 async function deleteVehicle(id) {
-    if (!confirm("Remove this vehicle? Journeys linked to it will keep their record but lose the vehicle link.")) return;
+    if (!confirm("Remove this vehicle from your garage? Journeys already logged against it are kept permanently — they'll just show as \"Vehicle removed\" going forward.")) return;
     const { error } = await sb.from("vehicles").delete().eq("id", id);
     if (error) { alert(error.message); return; }
     loadVehicles();
+    loadJourneys();
 }
 
 async function checkDVLA(vehicleId) {
@@ -482,14 +578,15 @@ async function loadJourneys() {
     if (error) { console.error(error); return; }
     journeysCache = data;
     renderTable();
-    populateTaxYearSelect();
+    populateTaxYearSelects();
+    renderDashboard();
 }
 
 function renderTable() {
     const tbody = document.querySelector("#logTable tbody");
     tbody.innerHTML = "";
     journeysCache.forEach(e => {
-        const vehicleLabel = e.vehicles ? `${e.vehicles.name} (${e.vehicles.registration})` : "—";
+        const vehicleLabel = e.vehicles ? `${e.vehicles.name} (${e.vehicles.registration})` : "Vehicle removed";
         const row = document.createElement("tr");
         row.innerHTML = `
             <td>${e.date}</td>
@@ -512,6 +609,43 @@ function renderTable() {
     });
 }
 
+document.getElementById("calcMiles").onclick = async () => {
+    const fromPostcode = document.getElementById("fromPostcode").value.trim();
+    const toPostcode = document.getElementById("toPostcode").value.trim();
+    const resultEl = document.getElementById("calcMilesResult");
+
+    if (!fromPostcode || !toPostcode) {
+        resultEl.textContent = "Enter both postcodes first.";
+        return;
+    }
+
+    resultEl.textContent = "Calculating…";
+
+    const { data: { session } } = await sb.auth.getSession();
+
+    try {
+        const res = await fetch(DISTANCE_FUNCTION_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${session.access_token}`
+            },
+            body: JSON.stringify({ fromPostcode, toPostcode })
+        });
+        const result = await res.json();
+
+        if (!res.ok) {
+            resultEl.textContent = "Couldn't calculate: " + (result.error || "Unknown error");
+            return;
+        }
+
+        document.getElementById("miles").value = result.miles;
+        resultEl.textContent = `Calculated: ${result.miles} miles (driving distance). You can adjust this if needed.`;
+    } catch (e) {
+        resultEl.textContent = "Could not reach the distance calculation service. Has it been deployed and configured yet?";
+    }
+};
+
 document.getElementById("add").onclick = async () => {
     const date = document.getElementById("date").value;
     const from_location = document.getElementById("from").value.trim();
@@ -519,20 +653,19 @@ document.getElementById("add").onclick = async () => {
     const purpose = document.getElementById("purpose").value.trim();
     const miles = parseFloat(document.getElementById("miles").value);
     const vehicle_id = document.getElementById("vehicleSelect").value;
-    const rate = parseFloat(document.getElementById("rate").value);
 
-    if (!date || !from_location || !to_location || !purpose || !vehicle_id || isNaN(miles) || isNaN(rate)) {
+    if (!date || !from_location || !to_location || !purpose || !vehicle_id || isNaN(miles)) {
         alert("Please complete all fields (including selecting a vehicle from your garage).");
         return;
     }
 
-    const amount = miles * rate;
-
+    // amount / miles_at_high_rate / miles_at_low_rate are filled in
+    // automatically by a database trigger — no need to compute here.
     const { error } = await sb.from("journeys").insert({
         user_id: currentUser.id,
         vehicle_id,
         date, from_location, to_location, purpose,
-        miles, rate, amount
+        miles
     });
     if (error) { alert(error.message); return; }
 
@@ -546,28 +679,153 @@ function clearForm() {
     document.getElementById("to").value = "";
     document.getElementById("purpose").value = "";
     document.getElementById("miles").value = "";
+    document.getElementById("fromPostcode").value = "";
+    document.getElementById("toPostcode").value = "";
+    document.getElementById("calcMilesResult").textContent = "";
 }
 
-// ---------- Export ----------
-function populateTaxYearSelect() {
-    const select = document.getElementById("taxYearSelect");
-    const years = new Set(journeysCache.map(e => getTaxYearKey(e.date)));
+// ---------- Dashboard: stats + charts ----------
+function populateTaxYearSelects() {
+    const years = new Set(journeysCache.map(e => e.tax_year_key || getTaxYearKey(e.date)));
+    years.add(currentTaxYearKey());
     const sortedKeys = Array.from(years).sort();
-    select.innerHTML = "";
-    sortedKeys.forEach(key => {
-        const opt = document.createElement("option");
-        opt.value = key;
-        opt.textContent = getTaxYearLabelFromKey(key);
-        select.appendChild(opt);
+
+    [document.getElementById("taxYearSelect"), document.getElementById("dashboardTaxYear")].forEach(select => {
+        const prevValue = select.value;
+        select.innerHTML = "";
+        sortedKeys.forEach(key => {
+            const opt = document.createElement("option");
+            opt.value = key;
+            opt.textContent = getTaxYearLabelFromKey(key);
+            select.appendChild(opt);
+        });
+        if (sortedKeys.includes(prevValue)) {
+            select.value = prevValue;
+        } else if (sortedKeys.includes(currentTaxYearKey())) {
+            select.value = currentTaxYearKey();
+        } else {
+            select.value = sortedKeys[sortedKeys.length - 1];
+        }
+    });
+
+    document.getElementById("dashboardTaxYear").onchange = renderDashboard;
+}
+
+// Returns the 12 {year, month} pairs for a UK tax year, April first.
+function monthsForTaxYear(key) {
+    const startYear = parseInt(key.split("_")[0], 10);
+    const months = [];
+    for (let i = 0; i < 12; i++) {
+        const m = (3 + i) % 12; // 3 = April (0-indexed)
+        const y = m < 3 ? startYear + 1 : startYear; // Jan/Feb/Mar roll into next calendar year
+        months.push({ year: y, month: m });
+    }
+    return months;
+}
+const MONTH_LABELS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+function renderDashboard() {
+    const key = document.getElementById("dashboardTaxYear").value;
+    if (!key) return;
+
+    const entries = journeysCache.filter(e => (e.tax_year_key || getTaxYearKey(e.date)) === key);
+
+    const totalMiles = entries.reduce((sum, e) => sum + Number(e.miles), 0);
+    const milesHigh = entries.reduce((sum, e) => sum + Number(e.miles_at_high_rate || 0), 0);
+    const milesLow = entries.reduce((sum, e) => sum + Number(e.miles_at_low_rate || 0), 0);
+    const totalAmount = entries.reduce((sum, e) => sum + Number(e.amount || 0), 0);
+    const remaining = Math.max(0, 10000 - totalMiles);
+
+    document.getElementById("dashboardStats").innerHTML = `
+        <div class="stat"><div class="stat-value">${totalMiles.toFixed(1)}</div><div class="stat-label">Total miles</div></div>
+        <div class="stat"><div class="stat-value">£${totalAmount.toFixed(2)}</div><div class="stat-label">Total claimable</div></div>
+        <div class="stat"><div class="stat-value">${milesHigh.toFixed(1)}</div><div class="stat-label">Miles @ 55p</div></div>
+        <div class="stat"><div class="stat-value">${milesLow.toFixed(1)}</div><div class="stat-label">Miles @ 25p</div></div>
+    `;
+    document.getElementById("thresholdNote").textContent = remaining > 0
+        ? `${remaining.toFixed(1)} miles left before the rate drops to 25p/mile for the rest of this tax year.`
+        : `You've passed the 10,000 mile threshold for this tax year — further journeys are claimed at 25p/mile.`;
+
+    // Build monthly + cumulative series in tax-year (Apr -> Mar) order
+    const months = monthsForTaxYear(key);
+    const monthlyMiles = months.map(({ year, month }) =>
+        entries
+            .filter(e => {
+                const d = new Date(e.date);
+                return d.getFullYear() === year && d.getMonth() === month;
+            })
+            .reduce((sum, e) => sum + Number(e.miles), 0)
+    );
+    const labels = months.map(({ month }) => MONTH_LABELS[month]);
+
+    let running = 0;
+    const cumulativeMiles = monthlyMiles.map(m => (running += m));
+
+    drawMonthlyChart(labels, monthlyMiles);
+    drawCumulativeChart(labels, cumulativeMiles);
+}
+
+function drawMonthlyChart(labels, data) {
+    const ctx = document.getElementById("monthlyChart");
+    if (monthlyChartInstance) monthlyChartInstance.destroy();
+    monthlyChartInstance = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels,
+            datasets: [{
+                label: "Miles",
+                data,
+                backgroundColor: "#0078d4"
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
     });
 }
 
+function drawCumulativeChart(labels, data) {
+    const ctx = document.getElementById("cumulativeChart");
+    if (cumulativeChartInstance) cumulativeChartInstance.destroy();
+    cumulativeChartInstance = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels,
+            datasets: [
+                {
+                    label: "Cumulative miles",
+                    data,
+                    borderColor: "#0078d4",
+                    backgroundColor: "rgba(0,120,212,0.1)",
+                    tension: 0.2,
+                    fill: true
+                },
+                {
+                    label: "10,000 mile threshold",
+                    data: labels.map(() => 10000),
+                    borderColor: "#c62828",
+                    borderDash: [6, 6],
+                    pointRadius: 0,
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+}
+
+// ---------- Export ----------
 function generateCSV(entries) {
-    let csv = "Date,From,To,Purpose,Miles,Vehicle,Registration,Rate,Amount\n";
+    let csv = "Date,From,To,Purpose,Miles,Miles@55p,Miles@25p,Vehicle,Registration,Amount\n";
     entries.forEach(e => {
-        const vName = e.vehicles ? e.vehicles.name : "";
+        const vName = e.vehicles ? e.vehicles.name : "Vehicle removed";
         const vReg = e.vehicles ? e.vehicles.registration : "";
-        csv += `${e.date},"${e.from_location.replace(/"/g, '""')}","${e.to_location.replace(/"/g, '""')}","${e.purpose.replace(/"/g, '""')}",${e.miles},"${vName}","${vReg}",${e.rate},${e.amount}\n`;
+        csv += `${e.date},"${e.from_location.replace(/"/g, '""')}","${e.to_location.replace(/"/g, '""')}","${e.purpose.replace(/"/g, '""')}",${e.miles},${e.miles_at_high_rate},${e.miles_at_low_rate},"${vName}","${vReg}",${e.amount}\n`;
     });
     return csv;
 }
@@ -575,7 +833,7 @@ function generateCSV(entries) {
 document.getElementById("exportYear").onclick = () => {
     const key = document.getElementById("taxYearSelect").value;
     if (!key) { alert("No tax year selected."); return; }
-    const entriesForYear = journeysCache.filter(e => getTaxYearKey(e.date) === key);
+    const entriesForYear = journeysCache.filter(e => (e.tax_year_key || getTaxYearKey(e.date)) === key);
     if (!entriesForYear.length) { alert("No entries for that tax year."); return; }
     downloadCSV(generateCSV(entriesForYear), `Mileage_${key}.csv`);
 };
@@ -591,6 +849,8 @@ function downloadCSV(csv, fileName) {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 }
+
+} // end if (sb)
 </script>
 
 </body>
