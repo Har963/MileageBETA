@@ -15,9 +15,15 @@ body {
 header {
     background: #0078d4;
     color: white;
-    padding: 16px;
-    text-align: center;
-    position: relative;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+header h1 {
+    font-size: 20px;
+    margin: 0;
 }
 h1, h2, h3 { margin: 0 0 12px 0; }
 h3 { font-size: 15px; margin-top: 20px; }
@@ -82,14 +88,22 @@ button.danger {
 }
 table {
     width: 100%;
+    min-width: 560px;
     border-collapse: collapse;
     font-size: 14px;
+}
+.table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -16px;
+    padding: 0 16px;
 }
 td, th {
     padding: 8px;
     border-bottom: 1px solid #eee;
     text-align: left;
     vertical-align: top;
+    white-space: nowrap;
 }
 footer {
     padding: 16px;
@@ -126,15 +140,14 @@ footer {
 .vehicle-title { font-weight: 700; font-size: 15px; }
 .vehicle-actions { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
 #logoutBtn {
-    position: absolute;
-    right: 16px;
-    top: 16px;
     background: rgba(255,255,255,0.15);
     color: white;
     border: 1px solid rgba(255,255,255,0.5);
     border-radius: 8px;
     padding: 6px 10px;
     font-size: 13px;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 .stat-grid {
     display: grid;
@@ -152,6 +165,13 @@ footer {
 .stat-label { font-size: 12px; color: #666; margin-top: 2px; }
 .threshold-note { margin-top: 10px; font-size: 13px; }
 canvas { max-width: 100%; }
+
+@media (max-width: 420px) {
+    .card { margin: 12px 8px; padding: 12px; }
+    header { padding: 12px; }
+    header h1 { font-size: 18px; }
+    .stat-value { font-size: 18px; }
+}
 </style>
 </head>
 
@@ -264,6 +284,7 @@ canvas { max-width: 100%; }
 
     <section class="card">
         <h2>Journeys</h2>
+        <div class="table-scroll">
         <table id="logTable">
             <thead>
             <tr>
@@ -278,6 +299,7 @@ canvas { max-width: 100%; }
             </thead>
             <tbody></tbody>
         </table>
+        </div>
     </section>
 
     <section class="card">
