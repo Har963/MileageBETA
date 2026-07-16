@@ -166,6 +166,35 @@ footer {
 .threshold-note { margin-top: 10px; font-size: 13px; }
 canvas { max-width: 100%; }
 
+#appSection { padding-bottom: 82px; }
+.tab-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    background: white;
+    border-top: 1px solid #e2e2e2;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+    z-index: 100;
+}
+.tab-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 8px 4px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    color: #888;
+    font-size: 11px;
+    font-weight: 600;
+}
+.tab-btn .tab-icon { font-size: 20px; line-height: 1; }
+.tab-btn.active { color: #0078d4; }
+
 @media (max-width: 420px) {
     .card { margin: 12px 8px; padding: 12px; }
     header { padding: 12px; }
@@ -218,6 +247,7 @@ canvas { max-width: 100%; }
 <!-- ============ APP SECTION (hidden until logged in) ============ -->
 <div id="appSection" class="hidden">
 
+    <div id="view-dashboard" class="view hidden">
     <section class="card">
         <h2>Dashboard</h2>
         <label>Tax year</label>
@@ -232,7 +262,9 @@ canvas { max-width: 100%; }
         <h3>Cumulative mileage this tax year</h3>
         <canvas id="cumulativeChart" height="180"></canvas>
     </section>
+    </div>
 
+    <div id="view-garage" class="view hidden">
     <section class="card">
         <h2>Your garage</h2>
 
@@ -246,7 +278,9 @@ canvas { max-width: 100%; }
 
         <div id="vehicleList" style="margin-top:16px;"></div>
     </section>
+    </div>
 
+    <div id="view-add" class="view">
     <section class="card">
         <h2>Add journey</h2>
 
@@ -281,7 +315,9 @@ canvas { max-width: 100%; }
 
         <button id="add" class="primary">Add journey</button>
     </section>
+    </div>
 
+    <div id="view-journeys" class="view hidden">
     <section class="card">
         <h2>Journeys</h2>
         <div class="table-scroll">
@@ -309,6 +345,22 @@ canvas { max-width: 100%; }
         <select id="taxYearSelect"></select>
         <button id="exportYear" class="primary">Export selected tax year CSV</button>
     </section>
+    </div>
+
+    <nav id="tabBar" class="tab-bar">
+        <button type="button" class="tab-btn active" data-view="add">
+            <span class="tab-icon">➕</span><span>Add</span>
+        </button>
+        <button type="button" class="tab-btn" data-view="journeys">
+            <span class="tab-icon">📋</span><span>Journeys</span>
+        </button>
+        <button type="button" class="tab-btn" data-view="garage">
+            <span class="tab-icon">🚗</span><span>Garage</span>
+        </button>
+        <button type="button" class="tab-btn" data-view="dashboard">
+            <span class="tab-icon">📊</span><span>Dashboard</span>
+        </button>
+    </nav>
 
 </div>
 
@@ -419,12 +471,28 @@ document.getElementById("logoutBtn").onclick = async () => {
     await sb.auth.signOut();
 };
 
+// ---------- Tab navigation ----------
+function showView(name) {
+    document.querySelectorAll(".view").forEach(v => v.classList.add("hidden"));
+    document.getElementById("view-" + name).classList.remove("hidden");
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.getAttribute("data-view") === name));
+    // Charts drawn while their canvas was hidden end up 0x0, so redraw
+    // fresh whenever the dashboard tab is actually opened.
+    if (name === "dashboard") {
+        renderDashboard();
+    }
+}
+document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.onclick = () => showView(btn.getAttribute("data-view"));
+});
+
 sb.auth.onAuthStateChange((_event, session) => {
     currentUser = session ? session.user : null;
     if (currentUser) {
         document.getElementById("authSection").classList.add("hidden");
         document.getElementById("appSection").classList.remove("hidden");
         document.getElementById("logoutBtn").classList.remove("hidden");
+        showView("add");
         loadVehicles();
         loadJourneys();
     } else {
