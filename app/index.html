@@ -48,6 +48,8 @@ header {
     display: flex;
     align-items: center;
     gap: 8px;
+    text-decoration: none;
+    color: inherit;
 }
 .logo-mark {
     width: 22px; height: 22px;
@@ -342,13 +344,13 @@ canvas { max-width: 100%; }
 <body>
 
 <header>
-    <div class="brand">
+    <a href="../index.html" class="brand">
         <span class="logo-mark"></span>
         <div class="brand-text">
             <div class="brand-name">ManageMyMiles</div>
             <div class="brand-sub">Business Mileage</div>
         </div>
-    </div>
+    </a>
     <button id="logoutBtn" class="hidden">Log out</button>
 </header>
 
@@ -381,6 +383,10 @@ canvas { max-width: 100%; }
         <div id="signupError" class="error hidden"></div>
         <div id="signupNotice" class="muted hidden"></div>
     </div>
+
+    <p class="muted" style="text-align:center; margin-top:16px;">
+        <a href="../index.html" style="color:var(--text-muted);">← Back to homepage</a>
+    </p>
 
     <div id="configErrorBox"></div>
 </section>
