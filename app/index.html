@@ -501,10 +501,16 @@ canvas { max-width: 100%; }
 
     <section class="card">
         <h2>Export</h2>
-        <p>Select a tax year and export a CSV.</p>
-        <label>Tax year</label>
-        <select id="taxYearSelect"></select>
-        <button id="exportYear" class="primary">Export selected tax year CSV</button>
+        <div id="exportFree">
+            <p class="muted">CSV export is a Pro feature.</p>
+            <button class="btn-ghost-like" id="exportUpgradeNote" disabled style="width:100%; padding:14px; margin-top:8px; background:transparent; color:var(--text-muted); border:1px solid var(--border); border-radius:10px; font-size:15px; font-weight:600;">Upgrade to export — coming soon</button>
+        </div>
+        <div id="exportPro" class="hidden">
+            <p>Select a tax year and export a CSV.</p>
+            <label>Tax year</label>
+            <select id="taxYearSelect"></select>
+            <button id="exportYear" class="primary">Export selected tax year CSV</button>
+        </div>
     </section>
     </div>
 
@@ -591,6 +597,7 @@ if (looksUnconfigured) {
 if (sb) {
 
 let currentUser = null;
+let isPremium = false;
 let vehiclesCache = [];
 let journeysCache = [];
 let favouritesCache = [];
@@ -659,12 +666,71 @@ sb.auth.onAuthStateChange((_event, session) => {
         loadVehicles();
         loadJourneys();
         loadFavourites();
+        loadProfile();
     } else {
         document.getElementById("authSection").classList.remove("hidden");
         document.getElementById("appSection").classList.add("hidden");
         document.getElementById("logoutBtn").classList.add("hidden");
+        isPremium = false;
     }
 });
+
+// ---------- Entry mode from landing-page CTAs ----------
+// ?mode=signup forces a fresh account-creation flow even if this browser
+// already has a saved session from earlier testing — otherwise "Start
+// free" would silently drop a new visitor into whatever account happens
+// to still be logged in here, instead of asking them to create one.
+// ?mode=login just makes sure the login form (not signup) is showing.
+(async function handleEntryMode() {
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get("mode");
+
+    if (mode === "signup") {
+        await sb.auth.signOut();
+        document.getElementById("loginForm").classList.add("hidden");
+        document.getElementById("signupForm").classList.remove("hidden");
+    } else if (mode === "login") {
+        document.getElementById("signupForm").classList.add("hidden");
+        document.getElementById("loginForm").classList.remove("hidden");
+    }
+
+    if (mode) {
+        // Tidy the URL so refreshing the page doesn't force a sign-out again.
+        params.delete("mode");
+        const newQuery = params.toString();
+        history.replaceState(null, "", window.location.pathname + (newQuery ? "?" + newQuery : "") + window.location.hash);
+    }
+})();
+
+// ---------- Plan / premium status ----------
+// Accounts that are always treated as premium regardless of the
+// "profiles" row — for testing the paid experience without needing to
+// flip is_premium in Table Editor every time.
+const TEST_PREMIUM_EMAILS = ["test@test.com"];
+
+async function loadProfile() {
+    if (TEST_PREMIUM_EMAILS.includes((currentUser.email || "").toLowerCase())) {
+        isPremium = true;
+        updateExportUI();
+        return;
+    }
+
+    const { data, error } = await sb
+        .from("profiles")
+        .select("is_premium")
+        .eq("id", currentUser.id)
+        .single();
+    if (error) { console.error(error); isPremium = false; } else { isPremium = !!(data && data.is_premium); }
+    updateExportUI();
+}
+
+function updateExportUI() {
+    const freeBox = document.getElementById("exportFree");
+    const proBox = document.getElementById("exportPro");
+    if (!freeBox || !proBox) return;
+    freeBox.classList.toggle("hidden", isPremium);
+    proBox.classList.toggle("hidden", !isPremium);
+}
 
 // ---------- Tax year helpers (UK: 6 April - 5 April) ----------
 function getTaxYearKey(dateStr) {
@@ -1313,6 +1379,7 @@ function generateCSV(entries) {
 }
 
 document.getElementById("exportYear").onclick = () => {
+    if (!isPremium) { alert("CSV export is a Pro feature — coming soon on the free plan."); return; }
     const key = document.getElementById("taxYearSelect").value;
     if (!key) { alert("No tax year selected."); return; }
     const entriesForYear = journeysCache.filter(e => (e.tax_year_key || getTaxYearKey(e.date)) === key);
