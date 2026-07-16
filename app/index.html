@@ -3,88 +3,156 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Business Mileage</title>
+<title>ManageMyMiles — Business Mileage</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
 <style>
+:root {
+    --bg: #14171c;
+    --surface: #1e222a;
+    --surface-2: #262b35;
+    --border: #2c313b;
+    --text: #edeef0;
+    --text-muted: #9aa0ac;
+    --amber: #f0ae3c;
+    --amber-dark: #c98a22;
+    --amber-ink: #1a1300;
+    --green: #4caf7d;
+    --red: #ef6a6a;
+    --radius: 14px;
+}
+* { box-sizing: border-box; }
 body {
-    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     margin: 0;
-    background: #f5f7fa;
-    color: #222;
+    background: var(--bg);
+    color: var(--text);
 }
 header {
-    background: #0078d4;
-    color: white;
-    padding: 12px 16px;
+    background: rgba(20, 23, 28, 0.95);
+    color: var(--text);
+    padding: 14px 16px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 20;
 }
-header h1 {
-    font-size: 20px;
-    margin: 0;
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
-h1, h2, h3 { margin: 0 0 12px 0; }
+.logo-mark {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    background: var(--amber);
+    display: inline-block;
+    position: relative;
+    flex-shrink: 0;
+}
+.logo-mark::after {
+    content: "";
+    position: absolute;
+    left: 4px; right: 4px; top: 10px;
+    height: 2px;
+    background-image: repeating-linear-gradient(to right, var(--amber-ink) 0 3px, transparent 3px 6px);
+}
+.brand-text { line-height: 1.15; }
+.brand-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+}
+.brand-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+h1, h2, h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    margin: 0 0 12px 0;
+    letter-spacing: -0.01em;
+}
 h3 { font-size: 15px; margin-top: 20px; }
 .card {
-    background: white;
+    background: var(--surface);
+    border: 1px solid var(--border);
     margin: 16px;
     padding: 16px;
-    border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    border-radius: var(--radius);
 }
 label {
     margin-top: 12px;
     display: block;
     font-weight: 600;
     font-size: 14px;
+    color: var(--text);
 }
 input, select {
     width: 100%;
     padding: 10px;
     margin-top: 4px;
     border-radius: 8px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text);
     font-size: 16px;
     box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
 }
+input::placeholder { color: var(--text-muted); }
+input[type="checkbox"] { width: auto; accent-color: var(--amber); }
+input[type="number"], .mono { font-family: 'JetBrains Mono', monospace; }
+button { font-family: 'Inter', sans-serif; cursor: pointer; }
 button.primary {
     width: 100%;
     padding: 14px;
     margin-top: 16px;
-    background: #0078d4;
-    color: white;
+    background: var(--amber);
+    color: var(--amber-ink);
     border: none;
-    border-radius: 8px;
-    font-size: 17px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
 }
-button.primary:active { opacity: 0.8; }
+button.primary:active { background: var(--amber-dark); }
 button.secondary {
     padding: 8px 12px;
     margin-top: 8px;
-    background: white;
-    color: #0078d4;
-    border: 1px solid #0078d4;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
     border-radius: 8px;
     font-size: 14px;
+    font-weight: 500;
 }
+button.secondary:active { border-color: var(--text-muted); }
 button.link {
     background: none;
     border: none;
-    color: #0078d4;
+    color: var(--amber);
     font-size: 14px;
     padding: 0;
     text-decoration: underline;
     cursor: pointer;
 }
 button.danger {
-    background: white;
-    color: #c62828;
-    border: 1px solid #c62828;
+    background: transparent;
+    color: var(--red);
+    border: 1px solid var(--red);
     border-radius: 8px;
     padding: 6px 10px;
     font-size: 13px;
+    font-weight: 500;
 }
 table {
     width: 100%;
@@ -100,16 +168,18 @@ table {
 }
 td, th {
     padding: 8px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border);
     text-align: left;
     vertical-align: top;
     white-space: nowrap;
 }
+th { color: var(--text-muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+td.mono, td:nth-child(5), td:nth-child(6) { font-family: 'JetBrains Mono', monospace; }
 footer {
     padding: 16px;
     text-align: center;
     font-size: 12px;
-    color: #666;
+    color: var(--text-muted);
 }
 .badge {
     display: inline-block;
@@ -117,54 +187,125 @@ footer {
     border-radius: 999px;
     font-size: 12px;
     font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
 }
-.badge.ok { background: #e6f4ea; color: #1e7e34; }
-.badge.bad { background: #fdecea; color: #c62828; }
-.badge.unknown { background: #eee; color: #666; }
-.error { color: #c62828; font-size: 14px; margin-top: 8px; }
+.badge.ok { background: rgba(76, 175, 125, 0.15); color: var(--green); }
+.badge.bad { background: rgba(239, 106, 106, 0.15); color: var(--red); }
+.badge.unknown { background: var(--surface-2); color: var(--text-muted); }
+.error { color: var(--red); font-size: 14px; margin-top: 8px; }
 .setup-error {
-    color: #c62828;
+    color: var(--red);
     font-size: 14px;
-    background: #fdecea;
-    border: 1px solid #f5c6cb;
+    background: rgba(239, 106, 106, 0.1);
+    border: 1px solid rgba(239, 106, 106, 0.35);
     border-radius: 8px;
     padding: 12px;
     margin-top: 12px;
     line-height: 1.5;
 }
-.setup-error code { background: #fff; padding: 1px 4px; border-radius: 4px; }
-.muted { color: #666; font-size: 13px; }
+.setup-error code { background: var(--surface-2); color: var(--text); padding: 1px 4px; border-radius: 4px; }
+.muted { color: var(--text-muted); font-size: 13px; }
 .hidden { display: none !important; }
-.vehicle-row { border-bottom: 1px solid #eee; padding: 12px 0; }
+.vehicle-row { border-bottom: 1px solid var(--border); padding: 12px 0; }
 .vehicle-row:last-child { border-bottom: none; }
-.vehicle-title { font-weight: 700; font-size: 15px; }
+.vehicle-title { font-weight: 700; font-size: 15px; font-family: 'Space Grotesk', sans-serif; }
 .vehicle-actions { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
 #logoutBtn {
-    background: rgba(255,255,255,0.15);
-    color: white;
-    border: 1px solid rgba(255,255,255,0.5);
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
     border-radius: 8px;
     padding: 6px 10px;
     font-size: 13px;
+    font-weight: 500;
     white-space: nowrap;
     flex-shrink: 0;
+}
+#logoutBtn:active { color: var(--text); border-color: var(--text-muted); }
+
+/* ---------- Trip computer (dashboard stats, borrowed from the landing page) ---------- */
+.trip-computer {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-top: 12px;
+    position: relative;
+    overflow: hidden;
+}
+.trip-computer::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--amber), var(--green));
+}
+.tc-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
 }
 .stat-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 12px;
+    gap: 0;
 }
 .stat {
-    background: #f5f7fa;
-    border-radius: 10px;
-    padding: 10px;
+    padding: 12px 4px;
     text-align: center;
+    border-top: 1px dashed var(--border);
 }
-.stat-value { font-size: 20px; font-weight: 700; color: #0078d4; }
-.stat-label { font-size: 12px; color: #666; margin-top: 2px; }
-.threshold-note { margin-top: 10px; font-size: 13px; }
+.stat:nth-child(1), .stat:nth-child(2) { border-top: none; padding-top: 14px; }
+.stat-value { font-size: 22px; font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; }
+.stat-value.claim { color: var(--green); }
+.stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.threshold-note { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border); font-size: 13px; color: var(--text-muted); }
 canvas { max-width: 100%; }
+
+.fav-chip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    text-align: left;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-top: 8px;
+    font-size: 14px;
+    color: var(--text);
+}
+.fav-chip .fav-main { flex: 1; }
+.fav-chip .fav-route { font-weight: 600; font-family: 'Space Grotesk', sans-serif; }
+.fav-chip .fav-sub { color: var(--text-muted); font-size: 12px; margin-top: 2px; }
+.fav-chip .fav-star {
+    background: none;
+    border: none;
+    font-size: 16px;
+    padding: 4px;
+    line-height: 1;
+    color: var(--amber);
+}
+.fav-chip .fav-remove {
+    background: none;
+    border: none;
+    font-size: 16px;
+    padding: 4px;
+    line-height: 1;
+    color: var(--text-muted);
+}
+
+@media (max-width: 420px) {
+    .card { margin: 12px 8px; padding: 12px; }
+    header { padding: 12px; }
+    .brand-name { font-size: 16px; }
+    .stat-value { font-size: 18px; }
+}
 
 #appSection { padding-bottom: 82px; }
 .tab-bar {
@@ -173,9 +314,9 @@ canvas { max-width: 100%; }
     right: 0;
     bottom: 0;
     display: flex;
-    background: white;
-    border-top: 1px solid #e2e2e2;
-    box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+    background: rgba(20, 23, 28, 0.95);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--border);
     padding-bottom: env(safe-area-inset-bottom, 0);
     z-index: 100;
 }
@@ -188,26 +329,26 @@ canvas { max-width: 100%; }
     flex-direction: column;
     align-items: center;
     gap: 2px;
-    color: #888;
+    color: var(--text-muted);
     font-size: 11px;
     font-weight: 600;
+    font-family: 'Inter', sans-serif;
 }
 .tab-btn .tab-icon { font-size: 20px; line-height: 1; }
-.tab-btn.active { color: #0078d4; }
-
-@media (max-width: 420px) {
-    .card { margin: 12px 8px; padding: 12px; }
-    header { padding: 12px; }
-    header h1 { font-size: 18px; }
-    .stat-value { font-size: 18px; }
-}
+.tab-btn.active { color: var(--amber); }
 </style>
 </head>
 
 <body>
 
 <header>
-    <h1>Business Mileage</h1>
+    <div class="brand">
+        <span class="logo-mark"></span>
+        <div class="brand-text">
+            <div class="brand-name">ManageMyMiles</div>
+            <div class="brand-sub">Business Mileage</div>
+        </div>
+    </div>
     <button id="logoutBtn" class="hidden">Log out</button>
 </header>
 
@@ -253,8 +394,11 @@ canvas { max-width: 100%; }
         <label>Tax year</label>
         <select id="dashboardTaxYear"></select>
 
-        <div class="stat-grid" id="dashboardStats"></div>
-        <p class="threshold-note" id="thresholdNote"></p>
+        <div class="trip-computer">
+            <div class="tc-label">Trip computer — selected tax year</div>
+            <div class="stat-grid" id="dashboardStats"></div>
+            <p class="threshold-note" id="thresholdNote"></p>
+        </div>
 
         <h3>Monthly mileage</h3>
         <canvas id="monthlyChart" height="180"></canvas>
@@ -311,9 +455,21 @@ canvas { max-width: 100%; }
         <label>Vehicle</label>
         <select id="vehicleSelect"></select>
 
+        <label style="display:flex; align-items:center; gap:8px; font-weight:400; margin-top:16px;">
+            <input type="checkbox" id="addReturn" style="width:auto; margin:0;">
+            Add the return leg too (same date, miles and purpose, reversed From/To)
+        </label>
+
         <p class="muted">Rate is applied automatically: 55p/mile for the first 10,000 business miles in the tax year, then 25p/mile after that.</p>
 
         <button id="add" class="primary">Add journey</button>
+        <button type="button" id="saveFavourite" class="secondary" style="width:100%;">☆ Save this route as a favourite</button>
+    </section>
+
+    <section class="card">
+        <h2>Quick add</h2>
+        <p class="muted">Tap a saved or frequent route to fill the form above.</p>
+        <div id="favouritesList"></div>
     </section>
     </div>
 
@@ -437,6 +593,7 @@ if (sb) {
 let currentUser = null;
 let vehiclesCache = [];
 let journeysCache = [];
+let favouritesCache = [];
 let monthlyChartInstance = null;
 let cumulativeChartInstance = null;
 
@@ -498,8 +655,10 @@ sb.auth.onAuthStateChange((_event, session) => {
         document.getElementById("appSection").classList.remove("hidden");
         document.getElementById("logoutBtn").classList.remove("hidden");
         showView("add");
+        document.getElementById("date").value = todayDateStr();
         loadVehicles();
         loadJourneys();
+        loadFavourites();
     } else {
         document.getElementById("authSection").classList.remove("hidden");
         document.getElementById("appSection").classList.add("hidden");
@@ -676,6 +835,7 @@ async function loadJourneys() {
     renderVehicleMileageSummary();
     populateTaxYearSelects();
     renderDashboard();
+    renderFavourites();
 }
 
 function renderVehicleMileageSummary() {
@@ -690,6 +850,7 @@ function renderVehicleMileageSummary() {
 
     const rows = Object.values(totals).sort((a, b) => b.miles - a.miles);
     const container = document.getElementById("vehicleMileageSummary");
+    if (!container) return;
 
     if (!rows.length) {
         container.innerHTML = `<p class="muted">No journeys logged yet.</p>`;
@@ -775,6 +936,7 @@ document.getElementById("add").onclick = async () => {
     const purpose = document.getElementById("purpose").value.trim();
     const miles = parseFloat(document.getElementById("miles").value);
     const vehicle_id = document.getElementById("vehicleSelect").value;
+    const addReturn = document.getElementById("addReturn").checked;
 
     if (!date || !from_location || !to_location || !purpose || !vehicle_id || isNaN(miles)) {
         alert("Please complete all fields (including selecting a vehicle from your garage).");
@@ -783,20 +945,45 @@ document.getElementById("add").onclick = async () => {
 
     // amount / miles_at_high_rate / miles_at_low_rate are filled in
     // automatically by a database trigger — no need to compute here.
-    const { error } = await sb.from("journeys").insert({
+    const rows = [{
         user_id: currentUser.id,
         vehicle_id,
         date, from_location, to_location, purpose,
         miles
-    });
+    }];
+
+    if (addReturn) {
+        // Same date, miles and purpose — just the leg reversed.
+        rows.push({
+            user_id: currentUser.id,
+            vehicle_id,
+            date,
+            from_location: to_location,
+            to_location: from_location,
+            purpose,
+            miles
+        });
+    }
+
+    const { error } = await sb.from("journeys").insert(rows);
     if (error) { alert(error.message); return; }
 
     clearForm();
     loadJourneys();
 };
 
+// Local YYYY-MM-DD (not toISOString, which shifts to UTC and can land
+// on the wrong day near midnight).
+function todayDateStr() {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+}
+
 function clearForm() {
-    document.getElementById("date").value = "";
+    document.getElementById("date").value = todayDateStr();
     document.getElementById("from").value = "";
     document.getElementById("to").value = "";
     document.getElementById("purpose").value = "";
@@ -804,7 +991,169 @@ function clearForm() {
     document.getElementById("fromPostcode").value = "";
     document.getElementById("toPostcode").value = "";
     document.getElementById("calcMilesResult").textContent = "";
+    document.getElementById("addReturn").checked = false;
 }
+
+// ---------- Favourite / frequent journeys ----------
+async function loadFavourites() {
+    const { data, error } = await sb
+        .from("favourite_journeys")
+        .select("*")
+        .order("created_at", { ascending: true });
+    if (error) { console.error(error); return; }
+    favouritesCache = data;
+    renderFavourites();
+}
+
+// Frequent = routes (from+to+vehicle) logged 2+ times that aren't
+// already saved as a favourite. Suggests them without requiring the
+// user to have saved anything manually.
+function computeFrequentRoutes() {
+    const savedKeys = new Set(favouritesCache.map(f => `${f.from_location}|${f.to_location}|${f.vehicle_id}`));
+    const counts = {};
+    journeysCache.forEach(e => {
+        const key = `${e.from_location}|${e.to_location}|${e.vehicle_id}`;
+        if (savedKeys.has(key)) return;
+        if (!counts[key]) {
+            counts[key] = {
+                count: 0,
+                from_location: e.from_location,
+                to_location: e.to_location,
+                purpose: e.purpose,
+                vehicle_id: e.vehicle_id,
+                miles: e.miles
+            };
+        }
+        counts[key].count += 1;
+    });
+    return Object.values(counts)
+        .filter(r => r.count >= 2)
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+}
+
+function vehicleLabelFor(vehicle_id) {
+    const v = vehiclesCache.find(v => v.id === vehicle_id);
+    return v ? `${v.name} (${v.registration})` : "Vehicle removed";
+}
+
+function fillJourneyForm(route) {
+    document.getElementById("from").value = route.from_location;
+    document.getElementById("to").value = route.to_location;
+    document.getElementById("purpose").value = route.purpose;
+    if (route.miles !== null && route.miles !== undefined) {
+        document.getElementById("miles").value = route.miles;
+    }
+    if (route.vehicle_id) {
+        document.getElementById("vehicleSelect").value = route.vehicle_id;
+    }
+    // Date is deliberately left for the user to fill in / confirm.
+    document.getElementById("date").focus();
+}
+
+function renderFavourites() {
+    const container = document.getElementById("favouritesList");
+    if (!container) return;
+    container.innerHTML = "";
+
+    const frequent = computeFrequentRoutes();
+
+    if (!favouritesCache.length && !frequent.length) {
+        container.innerHTML = `<p class="muted">No favourites yet — save a route above, or log the same journey twice and it'll show up here as a suggestion.</p>`;
+        return;
+    }
+
+    favouritesCache.forEach(f => {
+        const chip = document.createElement("div");
+        chip.className = "fav-chip";
+        chip.innerHTML = `
+            <button type="button" class="fav-main" data-use-fav="${f.id}" style="background:none;border:none;text-align:left;padding:0;">
+                <div class="fav-route">${f.label}</div>
+                <div class="fav-sub">${f.from_location} → ${f.to_location} · ${vehicleLabelFor(f.vehicle_id)}</div>
+            </button>
+            <button type="button" class="fav-remove" data-del-fav="${f.id}" title="Remove favourite">✕</button>
+        `;
+        container.appendChild(chip);
+    });
+
+    frequent.forEach((r, i) => {
+        const chip = document.createElement("div");
+        chip.className = "fav-chip";
+        chip.innerHTML = `
+            <button type="button" class="fav-main" data-use-freq="${i}" style="background:none;border:none;text-align:left;padding:0;">
+                <div class="fav-route">${r.from_location} → ${r.to_location}</div>
+                <div class="fav-sub">Logged ${r.count} times · ${vehicleLabelFor(r.vehicle_id)}</div>
+            </button>
+            <button type="button" class="fav-star" data-save-freq="${i}" title="Save as favourite">☆</button>
+        `;
+        container.appendChild(chip);
+    });
+
+    container.querySelectorAll("[data-use-fav]").forEach(btn => {
+        btn.onclick = () => {
+            const f = favouritesCache.find(x => x.id === btn.getAttribute("data-use-fav"));
+            if (f) fillJourneyForm(f);
+        };
+    });
+    container.querySelectorAll("[data-del-fav]").forEach(btn => {
+        btn.onclick = async () => {
+            if (!confirm("Remove this favourite? Journeys already logged are unaffected.")) return;
+            const { error } = await sb.from("favourite_journeys").delete().eq("id", btn.getAttribute("data-del-fav"));
+            if (error) { alert(error.message); return; }
+            loadFavourites();
+        };
+    });
+    container.querySelectorAll("[data-use-freq]").forEach(btn => {
+        btn.onclick = () => {
+            const r = frequent[parseInt(btn.getAttribute("data-use-freq"), 10)];
+            if (r) fillJourneyForm(r);
+        };
+    });
+    container.querySelectorAll("[data-save-freq]").forEach(btn => {
+        btn.onclick = async () => {
+            const r = frequent[parseInt(btn.getAttribute("data-save-freq"), 10)];
+            if (!r) return;
+            await saveFavouriteRoute(r);
+        };
+    });
+}
+
+async function saveFavouriteRoute(route) {
+    const defaultLabel = `${route.from_location} → ${route.to_location}`;
+    const label = prompt("Name this favourite:", defaultLabel);
+    if (label === null) return; // cancelled
+    const { error } = await sb.from("favourite_journeys").insert({
+        user_id: currentUser.id,
+        label: label.trim() || defaultLabel,
+        from_location: route.from_location,
+        to_location: route.to_location,
+        purpose: route.purpose,
+        vehicle_id: route.vehicle_id || null,
+        miles: route.miles ?? null
+    });
+    if (error) { alert(error.message); return; }
+    loadFavourites();
+}
+
+document.getElementById("saveFavourite").onclick = () => {
+    const from_location = document.getElementById("from").value.trim();
+    const to_location = document.getElementById("to").value.trim();
+    const purpose = document.getElementById("purpose").value.trim();
+    const miles = parseFloat(document.getElementById("miles").value);
+    const vehicle_id = document.getElementById("vehicleSelect").value || null;
+
+    if (!from_location || !to_location) {
+        alert("Fill in From and To before saving this as a favourite.");
+        return;
+    }
+
+    saveFavouriteRoute({
+        from_location, to_location,
+        purpose: purpose || "",
+        vehicle_id,
+        miles: isNaN(miles) ? null : miles
+    });
+};
 
 // ---------- Dashboard: stats + charts ----------
 function populateTaxYearSelects() {
@@ -860,7 +1209,7 @@ function renderDashboard() {
 
     document.getElementById("dashboardStats").innerHTML = `
         <div class="stat"><div class="stat-value">${totalMiles.toFixed(1)}</div><div class="stat-label">Total miles</div></div>
-        <div class="stat"><div class="stat-value">£${totalAmount.toFixed(2)}</div><div class="stat-label">Total claimable</div></div>
+        <div class="stat"><div class="stat-value claim">£${totalAmount.toFixed(2)}</div><div class="stat-label">Total claimable</div></div>
         <div class="stat"><div class="stat-value">${milesHigh.toFixed(1)}</div><div class="stat-label">Miles @ 55p</div></div>
         <div class="stat"><div class="stat-value">${milesLow.toFixed(1)}</div><div class="stat-label">Miles @ 25p</div></div>
     `;
@@ -887,6 +1236,9 @@ function renderDashboard() {
     drawCumulativeChart(labels, cumulativeMiles);
 }
 
+const CHART_TEXT = "#9aa0ac";
+const CHART_GRID = "#2c313b";
+
 function drawMonthlyChart(labels, data) {
     const ctx = document.getElementById("monthlyChart");
     if (monthlyChartInstance) monthlyChartInstance.destroy();
@@ -897,13 +1249,17 @@ function drawMonthlyChart(labels, data) {
             datasets: [{
                 label: "Miles",
                 data,
-                backgroundColor: "#0078d4"
+                backgroundColor: "#f0ae3c",
+                borderRadius: 4
             }]
         },
         options: {
             responsive: true,
             plugins: { legend: { display: false } },
-            scales: { y: { beginAtZero: true } }
+            scales: {
+                y: { beginAtZero: true, ticks: { color: CHART_TEXT }, grid: { color: CHART_GRID } },
+                x: { ticks: { color: CHART_TEXT }, grid: { display: false } }
+            }
         }
     });
 }
@@ -919,15 +1275,15 @@ function drawCumulativeChart(labels, data) {
                 {
                     label: "Cumulative miles",
                     data,
-                    borderColor: "#0078d4",
-                    backgroundColor: "rgba(0,120,212,0.1)",
+                    borderColor: "#4caf7d",
+                    backgroundColor: "rgba(76,175,125,0.12)",
                     tension: 0.2,
                     fill: true
                 },
                 {
                     label: "10,000 mile threshold",
                     data: labels.map(() => 10000),
-                    borderColor: "#c62828",
+                    borderColor: "#ef6a6a",
                     borderDash: [6, 6],
                     pointRadius: 0,
                     fill: false
@@ -936,7 +1292,11 @@ function drawCumulativeChart(labels, data) {
         },
         options: {
             responsive: true,
-            scales: { y: { beginAtZero: true } }
+            plugins: { legend: { labels: { color: CHART_TEXT } } },
+            scales: {
+                y: { beginAtZero: true, ticks: { color: CHART_TEXT }, grid: { color: CHART_GRID } },
+                x: { ticks: { color: CHART_TEXT }, grid: { display: false } }
+            }
         }
     });
 }
