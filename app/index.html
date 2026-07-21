@@ -207,6 +207,19 @@ footer {
 }
 .setup-error code { background: var(--surface-2); color: var(--text); padding: 1px 4px; border-radius: 4px; }
 .muted { color: var(--text-muted); font-size: 13px; }
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 400;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 6px;
+}
+.checkbox-label input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
 .hidden { display: none !important; }
 .vehicle-row { border-bottom: 1px solid var(--border); padding: 12px 0; }
 .vehicle-row:last-child { border-bottom: none; }
@@ -362,11 +375,45 @@ canvas { max-width: 100%; }
         <input type="email" id="loginEmail" autocomplete="username">
         <label>Password</label>
         <input type="password" id="loginPassword" autocomplete="current-password">
+        <label class="checkbox-label">
+            <input type="checkbox" id="showLoginPassword">
+            Show password
+        </label>
         <button id="loginBtn" class="primary">Log in</button>
         <p class="muted">No account yet?
             <button type="button" class="link" id="showSignup">Create one</button>
         </p>
+        <p class="muted">
+            <button type="button" class="link" id="showForgot">Forgot password?</button>
+        </p>
         <div id="loginError" class="error hidden"></div>
+    </div>
+
+    <div id="forgotForm" class="hidden">
+        <h2>Reset password</h2>
+        <p class="muted">Enter the email on your account and we'll send you a link to reset your password.</p>
+        <label>Email</label>
+        <input type="email" id="forgotEmail" autocomplete="username">
+        <button id="sendResetBtn" class="primary">Send reset link</button>
+        <p class="muted">
+            <button type="button" class="link" id="backToLoginFromForgot">Back to log in</button>
+        </p>
+        <div id="forgotError" class="error hidden"></div>
+        <div id="forgotNotice" class="muted hidden"></div>
+    </div>
+
+    <div id="newPasswordForm" class="hidden">
+        <h2>Set a new password</h2>
+        <p class="muted">Choose a new password for your account.</p>
+        <label>New password</label>
+        <input type="password" id="newPassword" autocomplete="new-password">
+        <label class="checkbox-label">
+            <input type="checkbox" id="showNewPassword">
+            Show password
+        </label>
+        <p class="muted">At least 6 characters.</p>
+        <button id="setNewPasswordBtn" class="primary">Update password</button>
+        <div id="newPasswordError" class="error hidden"></div>
     </div>
 
     <div id="signupForm" class="hidden">
@@ -375,6 +422,10 @@ canvas { max-width: 100%; }
         <input type="email" id="signupEmail" autocomplete="username">
         <label>Password</label>
         <input type="password" id="signupPassword" autocomplete="new-password">
+        <label class="checkbox-label">
+            <input type="checkbox" id="showSignupPassword">
+            Show password
+        </label>
         <p class="muted">At least 6 characters.</p>
         <button id="signupBtn" class="primary">Create account</button>
         <p class="muted">Already have an account?
@@ -550,14 +601,26 @@ canvas { max-width: 100%; }
 // wrong, switching between "Log in" and "Create account" still
 // works instead of the whole page silently going dead.
 // =========================================================
-document.getElementById("showSignup").onclick = () => {
-    document.getElementById("loginForm").classList.add("hidden");
-    document.getElementById("signupForm").classList.remove("hidden");
-};
-document.getElementById("showLogin").onclick = () => {
-    document.getElementById("signupForm").classList.add("hidden");
-    document.getElementById("loginForm").classList.remove("hidden");
-};
+function showAuthForm(name) {
+    ["loginForm", "signupForm", "forgotForm", "newPasswordForm"].forEach(id => {
+        document.getElementById(id).classList.toggle("hidden", id !== name);
+    });
+}
+document.getElementById("showSignup").onclick = () => showAuthForm("signupForm");
+document.getElementById("showLogin").onclick = () => showAuthForm("loginForm");
+document.getElementById("showForgot").onclick = () => showAuthForm("forgotForm");
+document.getElementById("backToLoginFromForgot").onclick = () => showAuthForm("loginForm");
+
+// Show/hide password toggles — plain checkboxes flipping each field's type.
+[
+    ["showLoginPassword", "loginPassword"],
+    ["showSignupPassword", "signupPassword"],
+    ["showNewPassword", "newPassword"]
+].forEach(([checkboxId, fieldId]) => {
+    document.getElementById(checkboxId).onchange = (e) => {
+        document.getElementById(fieldId).type = e.target.checked ? "text" : "password";
+    };
+});
 
 // =========================================================
 // CONFIG — replace these two with your own Supabase project
@@ -646,6 +709,63 @@ document.getElementById("logoutBtn").onclick = async () => {
     await sb.auth.signOut();
 };
 
+document.getElementById("sendResetBtn").onclick = async () => {
+    const email = document.getElementById("forgotEmail").value.trim();
+    const errEl = document.getElementById("forgotError");
+    const noticeEl = document.getElementById("forgotNotice");
+    errEl.classList.add("hidden");
+    noticeEl.classList.add("hidden");
+
+    if (!email) {
+        errEl.textContent = "Enter your email address first.";
+        errEl.classList.remove("hidden");
+        return;
+    }
+
+    // redirectTo points back at this same page; Supabase appends the
+    // recovery token, and onAuthStateChange below picks it up as a
+    // PASSWORD_RECOVERY event once the page loads.
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.href.split("#")[0].split("?")[0]
+    });
+    if (error) {
+        errEl.textContent = error.message;
+        errEl.classList.remove("hidden");
+        return;
+    }
+    noticeEl.textContent = "If that email has an account, a reset link has just been sent to it. Check your inbox (and spam folder).";
+    noticeEl.classList.remove("hidden");
+};
+
+document.getElementById("setNewPasswordBtn").onclick = async () => {
+    const password = document.getElementById("newPassword").value;
+    const errEl = document.getElementById("newPasswordError");
+    errEl.classList.add("hidden");
+
+    if (!password || password.length < 6) {
+        errEl.textContent = "Password must be at least 6 characters.";
+        errEl.classList.remove("hidden");
+        return;
+    }
+
+    const { error } = await sb.auth.updateUser({ password });
+    if (error) {
+        errEl.textContent = error.message;
+        errEl.classList.remove("hidden");
+        return;
+    }
+    // Session from the recovery link is now a normal valid session,
+    // so the next onAuthStateChange (SIGNED_IN/USER_UPDATED) logs
+    // them straight into the app.
+    document.getElementById("newPassword").value = "";
+    awaitingNewPassword = false;
+};
+
+// Set while a password-recovery link is being handled, so the normal
+// "session exists -> show the app" logic in onAuthStateChange doesn't
+// fire before the person has actually chosen a new password.
+let awaitingNewPassword = false;
+
 // ---------- Tab navigation ----------
 function showView(name) {
     document.querySelectorAll(".view").forEach(v => v.classList.add("hidden"));
@@ -661,9 +781,15 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     btn.onclick = () => showView(btn.getAttribute("data-view"));
 });
 
-sb.auth.onAuthStateChange((_event, session) => {
+sb.auth.onAuthStateChange((event, session) => {
+    if (event === "PASSWORD_RECOVERY") {
+        awaitingNewPassword = true;
+        showAuthForm("newPasswordForm");
+        return;
+    }
+
     currentUser = session ? session.user : null;
-    if (currentUser) {
+    if (currentUser && !awaitingNewPassword) {
         document.getElementById("authSection").classList.add("hidden");
         document.getElementById("appSection").classList.remove("hidden");
         document.getElementById("logoutBtn").classList.remove("hidden");
@@ -673,7 +799,7 @@ sb.auth.onAuthStateChange((_event, session) => {
         loadJourneys();
         loadFavourites();
         loadProfile();
-    } else {
+    } else if (!currentUser) {
         document.getElementById("authSection").classList.remove("hidden");
         document.getElementById("appSection").classList.add("hidden");
         document.getElementById("logoutBtn").classList.add("hidden");
@@ -693,11 +819,9 @@ sb.auth.onAuthStateChange((_event, session) => {
 
     if (mode === "signup") {
         await sb.auth.signOut();
-        document.getElementById("loginForm").classList.add("hidden");
-        document.getElementById("signupForm").classList.remove("hidden");
+        showAuthForm("signupForm");
     } else if (mode === "login") {
-        document.getElementById("signupForm").classList.add("hidden");
-        document.getElementById("loginForm").classList.remove("hidden");
+        showAuthForm("loginForm");
     }
 
     if (mode) {
