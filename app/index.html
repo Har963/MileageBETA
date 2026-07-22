@@ -432,7 +432,12 @@ canvas { max-width: 100%; }
             <button type="button" class="link" id="showLogin">Log in</button>
         </p>
         <div id="signupError" class="error hidden"></div>
-        <div id="signupNotice" class="muted hidden"></div>
+    </div>
+
+    <div id="signupSuccess" class="hidden">
+        <h2>Account created</h2>
+        <p class="muted">Thank you for creating an account. Please check your email for a confirmation link before logging in.</p>
+        <button id="signupSuccessClose" class="primary">Close</button>
     </div>
 
     <p class="muted" style="text-align:center; margin-top:16px;">
@@ -602,7 +607,7 @@ canvas { max-width: 100%; }
 // works instead of the whole page silently going dead.
 // =========================================================
 function showAuthForm(name) {
-    ["loginForm", "signupForm", "forgotForm", "newPasswordForm"].forEach(id => {
+    ["loginForm", "signupForm", "forgotForm", "newPasswordForm", "signupSuccess"].forEach(id => {
         document.getElementById(id).classList.toggle("hidden", id !== name);
     });
 }
@@ -691,9 +696,7 @@ document.getElementById("signupBtn").onclick = async () => {
     const email = document.getElementById("signupEmail").value.trim();
     const password = document.getElementById("signupPassword").value;
     const errEl = document.getElementById("signupError");
-    const noticeEl = document.getElementById("signupNotice");
     errEl.classList.add("hidden");
-    noticeEl.classList.add("hidden");
 
     const { error } = await sb.auth.signUp({ email, password });
     if (error) {
@@ -701,8 +704,24 @@ document.getElementById("signupBtn").onclick = async () => {
         errEl.classList.remove("hidden");
         return;
     }
-    noticeEl.textContent = "Account created. Check your email to confirm it, then log in.";
-    noticeEl.classList.remove("hidden");
+    showAuthForm("signupSuccess");
+};
+
+document.getElementById("signupSuccessClose").onclick = () => {
+    // Clear both forms so the signup screen doesn't still have the old
+    // details in it if the person opens it again, and the login screen
+    // that follows starts completely blank.
+    ["signupEmail", "signupPassword", "loginEmail", "loginPassword"].forEach(id => {
+        document.getElementById(id).value = "";
+    });
+    ["showSignupPassword", "showLoginPassword"].forEach(id => {
+        document.getElementById(id).checked = false;
+    });
+    document.getElementById("signupPassword").type = "password";
+    document.getElementById("loginPassword").type = "password";
+    document.getElementById("signupError").classList.add("hidden");
+    document.getElementById("loginError").classList.add("hidden");
+    showAuthForm("loginForm");
 };
 
 document.getElementById("logoutBtn").onclick = async () => {
