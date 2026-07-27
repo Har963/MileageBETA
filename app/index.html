@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ManageMyMiles — Business Mileage</title>
 
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#14171c">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mileage">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -432,12 +440,7 @@ canvas { max-width: 100%; }
             <button type="button" class="link" id="showLogin">Log in</button>
         </p>
         <div id="signupError" class="error hidden"></div>
-    </div>
-
-    <div id="signupSuccess" class="hidden">
-        <h2>Account created</h2>
-        <p class="muted">Thank you for creating an account. Please check your email for a confirmation link before logging in.</p>
-        <button id="signupSuccessClose" class="primary">Close</button>
+        <div id="signupNotice" class="muted hidden"></div>
     </div>
 
     <p class="muted" style="text-align:center; margin-top:16px;">
@@ -607,7 +610,7 @@ canvas { max-width: 100%; }
 // works instead of the whole page silently going dead.
 // =========================================================
 function showAuthForm(name) {
-    ["loginForm", "signupForm", "forgotForm", "newPasswordForm", "signupSuccess"].forEach(id => {
+    ["loginForm", "signupForm", "forgotForm", "newPasswordForm"].forEach(id => {
         document.getElementById(id).classList.toggle("hidden", id !== name);
     });
 }
@@ -696,7 +699,9 @@ document.getElementById("signupBtn").onclick = async () => {
     const email = document.getElementById("signupEmail").value.trim();
     const password = document.getElementById("signupPassword").value;
     const errEl = document.getElementById("signupError");
+    const noticeEl = document.getElementById("signupNotice");
     errEl.classList.add("hidden");
+    noticeEl.classList.add("hidden");
 
     const { error } = await sb.auth.signUp({ email, password });
     if (error) {
@@ -704,24 +709,8 @@ document.getElementById("signupBtn").onclick = async () => {
         errEl.classList.remove("hidden");
         return;
     }
-    showAuthForm("signupSuccess");
-};
-
-document.getElementById("signupSuccessClose").onclick = () => {
-    // Clear both forms so the signup screen doesn't still have the old
-    // details in it if the person opens it again, and the login screen
-    // that follows starts completely blank.
-    ["signupEmail", "signupPassword", "loginEmail", "loginPassword"].forEach(id => {
-        document.getElementById(id).value = "";
-    });
-    ["showSignupPassword", "showLoginPassword"].forEach(id => {
-        document.getElementById(id).checked = false;
-    });
-    document.getElementById("signupPassword").type = "password";
-    document.getElementById("loginPassword").type = "password";
-    document.getElementById("signupError").classList.add("hidden");
-    document.getElementById("loginError").classList.add("hidden");
-    showAuthForm("loginForm");
+    noticeEl.textContent = "Account created. Check your email to confirm it, then log in.";
+    noticeEl.classList.remove("hidden");
 };
 
 document.getElementById("logoutBtn").onclick = async () => {
@@ -1549,6 +1538,17 @@ function downloadCSV(csv, fileName) {
 }
 
 } // end if (sb)
+
+// Registering the service worker isn't inside "if (sb)" above — it should
+// still work (and let the page install to a home screen) even before the
+// Supabase config is filled in.
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("service-worker.js").catch((err) => {
+            console.error("Service worker registration failed:", err);
+        });
+    });
+}
 </script>
 
 </body>
