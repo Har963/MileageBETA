@@ -3,10 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ManageMyMiles — Business mileage, sorted</title>
-<meta name="description" content="Log business journeys, get the right mileage rate applied automatically, and have your claim ready to export. Built for UK sole traders and freelancers.">
-<link rel="icon" type="image/png" href="app/icons/icon-192.png">
-<link rel="icon" href="favicon.ico">
+<title>ManageMyMiles — Business Mileage</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#14171c">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mileage">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,107 +27,37 @@
     --text-muted: #9aa0ac;
     --amber: #f0ae3c;
     --amber-dark: #c98a22;
+    --amber-ink: #1a1300;
     --green: #4caf7d;
+    --red: #ef6a6a;
     --radius: 14px;
 }
-
 * { box-sizing: border-box; }
-
 body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     margin: 0;
     background: var(--bg);
     color: var(--text);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    line-height: 1.5;
 }
-
-h1, h2, h3 {
-    font-family: 'Space Grotesk', sans-serif;
-    margin: 0 0 12px 0;
-    letter-spacing: -0.01em;
-}
-
-.mono {
-    font-family: 'JetBrains Mono', monospace;
-}
-
-a { color: inherit; }
-
-.wrap {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 0 24px;
-}
-
-.eyebrow {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--amber);
-    margin-bottom: 14px;
-    display: inline-block;
-}
-
-.muted { color: var(--text-muted); }
-
-.road-divider {
-    height: 1px;
-    background-image: repeating-linear-gradient(to right, var(--border) 0 10px, transparent 10px 20px);
-    border: none;
-    margin: 0;
-}
-
-/* ---------- Buttons ---------- */
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 13px 22px;
-    border-radius: 10px;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 15px;
-    text-decoration: none;
-    cursor: pointer;
-    border: 1px solid transparent;
-    white-space: nowrap;
-}
-.btn-primary { background: var(--amber); color: #1a1300; }
-.btn-primary:hover { background: var(--amber-dark); }
-.btn-ghost { background: transparent; color: var(--text); border-color: var(--border); }
-.btn-ghost:hover { border-color: var(--text-muted); }
-.btn-text { background: none; border: none; color: var(--text-muted); font-weight: 600; font-size: 14px; }
-.btn-text:hover { color: var(--text); }
-.btn-block { width: 100%; }
-.btn[disabled] { opacity: 0.45; cursor: default; }
-
-/* ---------- Header ---------- */
 header {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    background: rgba(20, 23, 28, 0.9);
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--border);
-}
-.header-inner {
+    background: rgba(20, 23, 28, 0.95);
+    color: var(--text);
+    padding: 14px 16px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 0;
-    gap: 16px;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 20;
 }
-.logo {
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: 18px;
+.brand {
     display: flex;
     align-items: center;
     gap: 8px;
     text-decoration: none;
-    color: var(--text);
+    color: inherit;
 }
 .logo-mark {
     width: 22px; height: 22px;
@@ -130,61 +65,194 @@ header {
     background: var(--amber);
     display: inline-block;
     position: relative;
+    flex-shrink: 0;
 }
 .logo-mark::after {
     content: "";
     position: absolute;
     left: 4px; right: 4px; top: 10px;
     height: 2px;
-    background: #1a1300;
-    background-image: repeating-linear-gradient(to right, #1a1300 0 3px, transparent 3px 6px);
+    background-image: repeating-linear-gradient(to right, var(--amber-ink) 0 3px, transparent 3px 6px);
 }
-.nav-links {
-    display: flex;
-    gap: 28px;
+.brand-text { line-height: 1.15; }
+.brand-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+}
+.brand-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+h1, h2, h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    margin: 0 0 12px 0;
+    letter-spacing: -0.01em;
+}
+h3 { font-size: 15px; margin-top: 20px; }
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin: 16px;
+    padding: 16px;
+    border-radius: var(--radius);
+}
+label {
+    margin-top: 12px;
+    display: block;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+}
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 4px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text);
+    font-size: 16px;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+input::placeholder { color: var(--text-muted); }
+input[type="checkbox"] { width: auto; accent-color: var(--amber); }
+input[type="number"], .mono { font-family: 'JetBrains Mono', monospace; }
+button { font-family: 'Inter', sans-serif; cursor: pointer; }
+button.primary {
+    width: 100%;
+    padding: 14px;
+    margin-top: 16px;
+    background: var(--amber);
+    color: var(--amber-ink);
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+}
+button.primary:active { background: var(--amber-dark); }
+button.secondary {
+    padding: 8px 12px;
+    margin-top: 8px;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
     font-size: 14px;
     font-weight: 500;
 }
-.nav-links a { text-decoration: none; color: var(--text-muted); }
-.nav-links a:hover { color: var(--text); }
-.nav-actions { display: flex; align-items: center; gap: 10px; }
-
-@media (max-width: 720px) {
-    .nav-links { display: none; }
+button.secondary:active { border-color: var(--text-muted); }
+button.link {
+    background: none;
+    border: none;
+    color: var(--amber);
+    font-size: 14px;
+    padding: 0;
+    text-decoration: underline;
+    cursor: pointer;
 }
-
-/* ---------- Hero ---------- */
-.hero {
-    padding: 72px 0 56px;
+button.danger {
+    background: transparent;
+    color: var(--red);
+    border: 1px solid var(--red);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 13px;
+    font-weight: 500;
 }
-.hero-grid {
-    display: grid;
-    grid-template-columns: 1.1fr 1fr;
-    gap: 48px;
-    align-items: center;
+table {
+    width: 100%;
+    min-width: 560px;
+    border-collapse: collapse;
+    font-size: 14px;
 }
-.hero h1 {
-    font-size: clamp(34px, 5vw, 52px);
-    line-height: 1.08;
+.table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -16px;
+    padding: 0 16px;
 }
-.hero p.lead {
-    font-size: 17px;
+td, th {
+    padding: 8px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+    white-space: nowrap;
+}
+th { color: var(--text-muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+td.mono, td:nth-child(5), td:nth-child(6) { font-family: 'JetBrains Mono', monospace; }
+footer {
+    padding: 16px;
+    text-align: center;
+    font-size: 12px;
     color: var(--text-muted);
-    max-width: 46ch;
-    margin: 0 0 28px 0;
 }
-.hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
-
-@media (max-width: 860px) {
-    .hero-grid { grid-template-columns: 1fr; }
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
 }
+.badge.ok { background: rgba(76, 175, 125, 0.15); color: var(--green); }
+.badge.bad { background: rgba(239, 106, 106, 0.15); color: var(--red); }
+.badge.unknown { background: var(--surface-2); color: var(--text-muted); }
+.error { color: var(--red); font-size: 14px; margin-top: 8px; }
+.setup-error {
+    color: var(--red);
+    font-size: 14px;
+    background: rgba(239, 106, 106, 0.1);
+    border: 1px solid rgba(239, 106, 106, 0.35);
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 12px;
+    line-height: 1.5;
+}
+.setup-error code { background: var(--surface-2); color: var(--text); padding: 1px 4px; border-radius: 4px; }
+.muted { color: var(--text-muted); font-size: 13px; }
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 400;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 6px;
+}
+.checkbox-label input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+.hidden { display: none !important; }
+.vehicle-row { border-bottom: 1px solid var(--border); padding: 12px 0; }
+.vehicle-row:last-child { border-bottom: none; }
+.vehicle-title { font-weight: 700; font-size: 15px; font-family: 'Space Grotesk', sans-serif; }
+.vehicle-actions { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
+#logoutBtn {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+#logoutBtn:active { color: var(--text); border-color: var(--text-muted); }
 
-/* ---------- Trip computer (shared signature component) ---------- */
+/* ---------- Trip computer (dashboard stats, borrowed from the landing page) ---------- */
 .trip-computer {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 22px;
+    padding: 18px;
+    margin-top: 12px;
     position: relative;
     overflow: hidden;
 }
@@ -195,7 +263,7 @@ header {
     height: 3px;
     background: linear-gradient(90deg, var(--amber), var(--green));
 }
-.trip-computer .tc-label {
+.tc-label {
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     letter-spacing: 0.08em;
@@ -203,460 +271,1374 @@ header {
     color: var(--text-muted);
     margin-bottom: 4px;
 }
-.tc-headline {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    margin-bottom: 18px;
-}
-.tc-headline .tc-value {
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 700;
-    font-size: 40px;
-    color: var(--text);
-}
-.tc-headline .tc-unit { color: var(--text-muted); font-size: 14px; }
-.tc-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-top: 1px solid var(--border);
-    font-size: 14px;
-}
-.tc-row .tc-num { font-family: 'JetBrains Mono', monospace; font-weight: 500; }
-.tc-total {
-    margin-top: 6px;
-    padding-top: 14px;
-    border-top: 1px dashed var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-}
-.tc-total .tc-num {
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 700;
-    font-size: 26px;
-    color: var(--green);
-}
-
-/* ---------- Section shell ---------- */
-section.block { padding: 64px 0; }
-.block-head { max-width: 60ch; margin-bottom: 40px; }
-.block-head h2 { font-size: 30px; }
-
-/* ---------- How it works (journey stops) ---------- */
-.stops {
-    display: flex;
-    gap: 0;
-    counter-reset: stop;
-}
-.stop {
-    flex: 1;
-    position: relative;
-    padding: 0 20px 0 0;
-}
-.stop:not(:last-child)::after {
-    content: "";
-    position: absolute;
-    top: 15px;
-    left: 40px;
-    right: -20px;
-    height: 0;
-    border-top: 2px dashed var(--border);
-}
-.stop-marker {
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    background: var(--surface);
-    border: 2px solid var(--amber);
-    color: var(--amber);
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 700;
-    font-size: 13px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 16px;
-    position: relative;
-    z-index: 1;
-}
-.stop h3 { font-size: 17px; margin-bottom: 6px; }
-.stop p { color: var(--text-muted); font-size: 14px; margin: 0; }
-
-@media (max-width: 720px) {
-    .stops { flex-direction: column; gap: 28px; }
-    .stop:not(:last-child)::after {
-        top: 32px; left: 15px; right: auto; bottom: -28px;
-        width: 0; height: 28px;
-        border-top: none;
-        border-left: 2px dashed var(--border);
-    }
-}
-
-/* ---------- Calculator ---------- */
-.calc-grid {
-    display: grid;
-    grid-template-columns: 1fr 1.1fr;
-    gap: 40px;
-    align-items: start;
-}
-.calc-input label {
-    font-size: 13px;
-    font-weight: 600;
-    display: block;
-    margin-bottom: 6px;
-}
-.calc-input input {
-    width: 100%;
-    padding: 14px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text);
-    font-size: 20px;
-    font-family: 'JetBrains Mono', monospace;
-}
-.calc-input p { margin-top: 10px; }
-
-@media (max-width: 860px) {
-    .calc-grid { grid-template-columns: 1fr; }
-}
-
-/* ---------- Feature grid ---------- */
-.feature-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-}
-.feature {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-}
-.feature .f-icon { font-size: 20px; margin-bottom: 10px; display: block; }
-.feature h3 { font-size: 15px; margin-bottom: 6px; }
-.feature p { font-size: 13.5px; color: var(--text-muted); margin: 0; }
-
-@media (max-width: 860px) {
-    .feature-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 560px) {
-    .feature-grid { grid-template-columns: 1fr; }
-}
-
-/* ---------- Pricing ---------- */
-.pricing-grid {
+.stat-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    gap: 0;
 }
-.plan {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 26px;
-}
-.plan.pro { border-color: var(--amber); position: relative; }
-.plan-badge {
-    position: absolute;
-    top: -11px; right: 20px;
-    background: var(--amber);
-    color: #1a1300;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 3px 10px;
-    border-radius: 999px;
-    font-family: 'JetBrains Mono', monospace;
-}
-.plan h3 { font-size: 18px; }
-.plan .price {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 30px;
-    font-weight: 700;
-    margin: 6px 0 18px 0;
-}
-.plan .price span { font-size: 14px; color: var(--text-muted); font-weight: 500; }
-.plan ul { list-style: none; padding: 0; margin: 0 0 22px 0; }
-.plan li {
-    padding: 8px 0;
-    border-top: 1px solid var(--border);
-    font-size: 14px;
-    color: var(--text-muted);
-}
-.plan li:first-child { border-top: none; }
-.plan li::before { content: "✓ "; color: var(--green); font-weight: 700; }
-
-@media (max-width: 720px) {
-    .pricing-grid { grid-template-columns: 1fr; }
-}
-
-/* ---------- CTA band ---------- */
-.cta-band {
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    padding: 56px 0;
+.stat {
+    padding: 12px 4px;
     text-align: center;
+    border-top: 1px dashed var(--border);
 }
-.cta-band h2 { font-size: 26px; }
+.stat:nth-child(1), .stat:nth-child(2) { border-top: none; padding-top: 14px; }
+.stat-value { font-size: 22px; font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; }
+.stat-value.claim { color: var(--green); }
+.stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.threshold-note { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border); font-size: 13px; color: var(--text-muted); }
+canvas { max-width: 100%; }
 
-/* ---------- Footer ---------- */
-footer {
-    padding: 40px 0;
-}
-.footer-inner {
+.fav-chip {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-    font-size: 13px;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    text-align: left;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-top: 8px;
+    font-size: 14px;
+    color: var(--text);
+}
+.fav-chip .fav-main { flex: 1; }
+.fav-chip .fav-route { font-weight: 600; font-family: 'Space Grotesk', sans-serif; }
+.fav-chip .fav-sub { color: var(--text-muted); font-size: 12px; margin-top: 2px; }
+.fav-chip .fav-star {
+    background: none;
+    border: none;
+    font-size: 16px;
+    padding: 4px;
+    line-height: 1;
+    color: var(--amber);
+}
+.fav-chip .fav-remove {
+    background: none;
+    border: none;
+    font-size: 16px;
+    padding: 4px;
+    line-height: 1;
     color: var(--text-muted);
 }
 
-@media (prefers-reduced-motion: reduce) {
-    * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+@media (max-width: 420px) {
+    .card { margin: 12px 8px; padding: 12px; }
+    header { padding: 12px; }
+    .brand-name { font-size: 16px; }
+    .stat-value { font-size: 18px; }
 }
+
+#appSection { padding-bottom: 82px; }
+.tab-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    background: rgba(20, 23, 28, 0.95);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--border);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+    z-index: 100;
+}
+.tab-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 8px 4px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+}
+.tab-btn .tab-icon { font-size: 20px; line-height: 1; }
+.tab-btn.active { color: var(--amber); }
 </style>
 </head>
+
 <body>
 
 <header>
-    <div class="wrap header-inner">
-        <a href="#" class="logo"><span class="logo-mark"></span>ManageMyMiles</a>
-        <nav class="nav-links">
-            <a href="#how-it-works">How it works</a>
-            <a href="#calculator">Free calculator</a>
-            <a href="#pricing">Pricing</a>
-        </nav>
-        <div class="nav-actions">
-            <a href="app/index.html" class="btn-text">Log in</a>
-            <a href="app/index.html" class="btn btn-primary">Get started free</a>
+    <a href="../index.html" class="brand">
+        <span class="logo-mark"></span>
+        <div class="brand-text">
+            <div class="brand-name">ManageMyMiles</div>
+            <div class="brand-sub">Business Mileage</div>
         </div>
-    </div>
+    </a>
+    <button id="logoutBtn" class="hidden">Log out</button>
 </header>
 
-<main>
-    <section class="hero">
-        <div class="wrap hero-grid">
-            <div>
-                <span class="eyebrow">For UK sole traders &amp; freelancers</span>
-                <h1>Every mile, accounted for.</h1>
-                <p class="lead">Log a journey in seconds. The right mileage rate is applied automatically, whatever you're driving, so your claim is always correct and ready to export.</p>
-                <div class="hero-ctas">
-                    <a href="app/index.html" class="btn btn-primary">Start tracking free</a>
-                    <a href="#how-it-works" class="btn btn-ghost">See how it works</a>
-                </div>
-            </div>
+<!-- ============ AUTH SECTION ============ -->
+<section id="authSection" class="card">
+    <div id="loginForm">
+        <h2>Log in</h2>
+        <label>Email</label>
+        <input type="email" id="loginEmail" autocomplete="username">
+        <label>Password</label>
+        <input type="password" id="loginPassword" autocomplete="current-password">
+        <label class="checkbox-label">
+            <input type="checkbox" id="showLoginPassword">
+            Show password
+        </label>
+        <button id="loginBtn" class="primary">Log in</button>
+        <p class="muted">No account yet?
+            <button type="button" class="link" id="showSignup">Create one</button>
+        </p>
+        <p class="muted">
+            <button type="button" class="link" id="showForgot">Forgot password?</button>
+        </p>
+        <div id="loginError" class="error hidden"></div>
+    </div>
 
-            <div class="trip-computer" id="heroTripComputer">
-                <div class="tc-label">Trip computer — this tax year</div>
-                <div class="tc-headline">
-                    <span class="tc-value mono" id="heroMiles">0</span>
-                    <span class="tc-unit">miles logged</span>
-                </div>
-                <div class="tc-total"><span class="muted">Claim ready to export</span><span class="tc-num" id="heroAmount">£0.00</span></div>
-            </div>
+    <div id="forgotForm" class="hidden">
+        <h2>Reset password</h2>
+        <p class="muted">Enter the email on your account and we'll send you a link to reset your password.</p>
+        <label>Email</label>
+        <input type="email" id="forgotEmail" autocomplete="username">
+        <button id="sendResetBtn" class="primary">Send reset link</button>
+        <p class="muted">
+            <button type="button" class="link" id="backToLoginFromForgot">Back to log in</button>
+        </p>
+        <div id="forgotError" class="error hidden"></div>
+        <div id="forgotNotice" class="muted hidden"></div>
+    </div>
+
+    <div id="newPasswordForm" class="hidden">
+        <h2>Set a new password</h2>
+        <p class="muted">Choose a new password for your account.</p>
+        <label>New password</label>
+        <input type="password" id="newPassword" autocomplete="new-password">
+        <label class="checkbox-label">
+            <input type="checkbox" id="showNewPassword">
+            Show password
+        </label>
+        <p class="muted">At least 6 characters.</p>
+        <button id="setNewPasswordBtn" class="primary">Update password</button>
+        <div id="newPasswordError" class="error hidden"></div>
+    </div>
+
+    <div id="signupForm" class="hidden">
+        <h2>Create account</h2>
+        <label>Email</label>
+        <input type="email" id="signupEmail" autocomplete="username">
+        <label>Password</label>
+        <input type="password" id="signupPassword" autocomplete="new-password">
+        <label class="checkbox-label">
+            <input type="checkbox" id="showSignupPassword">
+            Show password
+        </label>
+        <p class="muted">At least 6 characters.</p>
+        <button id="signupBtn" class="primary">Create account</button>
+        <p class="muted">Already have an account?
+            <button type="button" class="link" id="showLogin">Log in</button>
+        </p>
+        <div id="signupError" class="error hidden"></div>
+        <div id="signupNotice" class="muted hidden"></div>
+    </div>
+
+    <p class="muted" style="text-align:center; margin-top:16px;">
+        <a href="../index.html" style="color:var(--text-muted);">← Back to homepage</a>
+    </p>
+
+    <div id="configErrorBox"></div>
+</section>
+
+<!-- ============ APP SECTION (hidden until logged in) ============ -->
+<div id="appSection" class="hidden">
+
+    <div id="view-dashboard" class="view hidden">
+    <section class="card">
+        <h2>Dashboard</h2>
+        <label>Tax year</label>
+        <select id="dashboardTaxYear"></select>
+
+        <div class="trip-computer">
+            <div class="tc-label">Trip computer — selected tax year</div>
+            <div class="stat-grid" id="dashboardStats"></div>
+            <div id="extraBreakdown" class="hidden" style="margin-top:8px;"></div>
+            <p class="threshold-note" id="thresholdNote"></p>
+        </div>
+
+        <h3>Monthly mileage</h3>
+        <canvas id="monthlyChart" height="180"></canvas>
+
+        <h3>Cumulative mileage this tax year</h3>
+        <canvas id="cumulativeChart" height="180"></canvas>
+    </section>
+    </div>
+
+    <div id="view-garage" class="view hidden">
+    <section class="card">
+        <h2>Your garage</h2>
+
+        <label>Vehicle name (e.g. "My Golf")</label>
+        <input type="text" id="vehicleName">
+
+        <label>Vehicle type</label>
+        <select id="vehicleType">
+            <option value="car_van">Car or van</option>
+            <option value="motorcycle">Motorcycle</option>
+            <option value="bicycle">Bicycle</option>
+        </select>
+        <p class="muted" style="margin-top:6px;">Electric and hybrid vehicles use the same rate as petrol/diesel — just choose "Car or van".</p>
+
+        <label id="vehicleRegLabel">Registration number</label>
+        <input type="text" id="vehicleReg" style="text-transform:uppercase">
+
+        <button id="addVehicle" class="primary">Add vehicle</button>
+
+        <div id="vehicleList" style="margin-top:16px;"></div>
+    </section>
+    </div>
+
+    <div id="view-add" class="view">
+    <section class="card">
+        <h2>Add journey</h2>
+
+        <label>Date</label>
+        <input type="date" id="date">
+
+        <label>From</label>
+        <input type="text" id="from">
+
+        <label>To</label>
+        <input type="text" id="to">
+
+        <label>Business purpose</label>
+        <input type="text" id="purpose">
+
+        <label>From postcode <span class="muted">(optional, for auto-calculating miles)</span></label>
+        <input type="text" id="fromPostcode" style="text-transform:uppercase" placeholder="e.g. PO1 3AX">
+
+        <label>To postcode</label>
+        <input type="text" id="toPostcode" style="text-transform:uppercase" placeholder="e.g. SW1A 1AA">
+
+        <button type="button" id="calcMiles" class="secondary" style="width:100%;">Calculate miles from postcodes</button>
+        <div id="calcMilesResult" class="muted" style="margin-top:6px;"></div>
+
+        <label>Miles</label>
+        <input type="number" id="miles" step="0.1">
+
+        <label>Vehicle</label>
+        <select id="vehicleSelect"></select>
+
+        <div id="passengersField">
+            <label>Passengers <span class="muted">(colleagues also on a work journey — cars/vans only)</span></label>
+            <input type="number" id="passengers" min="0" step="1" value="0">
+        </div>
+
+        <label style="display:flex; align-items:center; gap:8px; font-weight:400; margin-top:16px;">
+            <input type="checkbox" id="addReturn" style="width:auto; margin:0;">
+            Add the return leg too (same date, miles and purpose, reversed From/To)
+        </label>
+
+        <p class="muted" id="rateInfo"></p>
+
+        <button id="add" class="primary">Add journey</button>
+        <button type="button" id="saveFavourite" class="secondary" style="width:100%;">☆ Save this route as a favourite</button>
+    </section>
+
+    <section class="card">
+        <h2>Quick add</h2>
+        <p class="muted">Tap a saved or frequent route to fill the form above.</p>
+        <div id="favouritesList"></div>
+    </section>
+    </div>
+
+    <div id="view-journeys" class="view hidden">
+    <section class="card">
+        <h2>Miles by vehicle</h2>
+        <div id="vehicleMileageSummary"></div>
+    </section>
+
+    <section class="card">
+        <h2>Journeys</h2>
+        <div class="table-scroll">
+        <table id="logTable">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Vehicle</th>
+                <th>Miles</th>
+                <th>Amount</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
         </div>
     </section>
 
-    <hr class="road-divider">
-
-    <section class="block" id="how-it-works">
-        <div class="wrap">
-            <div class="block-head">
-                <span class="eyebrow">How it works</span>
-                <h2>Three stops, no spreadsheet</h2>
-            </div>
-            <div class="stops">
-                <div class="stop">
-                    <div class="stop-marker">01</div>
-                    <h3>Log the trip</h3>
-                    <p>From, to, purpose, and miles — type them in, or enter two postcodes and let it calculate the driving distance for you.</p>
-                </div>
-                <div class="stop">
-                    <div class="stop-marker">02</div>
-                    <h3>Rate applied automatically</h3>
-                    <p>The right rate for your vehicle, calculated for you automatically — even if you log journeys out of order.</p>
-                </div>
-                <div class="stop">
-                    <div class="stop-marker">03</div>
-                    <h3>Claim ready to export</h3>
-                    <p>See your running total on a dashboard with charts, then export any tax year as a CSV whenever you need it.</p>
-                </div>
-            </div>
+    <section class="card">
+        <h2>Export</h2>
+        <div id="exportFree">
+            <p class="muted">CSV export is a Pro feature.</p>
+            <button class="btn-ghost-like" id="exportUpgradeNote" disabled style="width:100%; padding:14px; margin-top:8px; background:transparent; color:var(--text-muted); border:1px solid var(--border); border-radius:10px; font-size:15px; font-weight:600;">Upgrade to export — coming soon</button>
+        </div>
+        <div id="exportPro" class="hidden">
+            <p>Select a tax year and export a CSV.</p>
+            <label>Tax year</label>
+            <select id="taxYearSelect"></select>
+            <button id="exportYear" class="primary">Export selected tax year CSV</button>
         </div>
     </section>
+    </div>
 
-    <hr class="road-divider">
+    <nav id="tabBar" class="tab-bar">
+        <button type="button" class="tab-btn active" data-view="add">
+            <span class="tab-icon">➕</span><span>Add</span>
+        </button>
+        <button type="button" class="tab-btn" data-view="journeys">
+            <span class="tab-icon">📋</span><span>Journeys</span>
+        </button>
+        <button type="button" class="tab-btn" data-view="garage">
+            <span class="tab-icon">🚗</span><span>Garage</span>
+        </button>
+        <button type="button" class="tab-btn" data-view="dashboard">
+            <span class="tab-icon">📊</span><span>Dashboard</span>
+        </button>
+    </nav>
 
-    <section class="block" id="calculator">
-        <div class="wrap">
-            <div class="block-head">
-                <span class="eyebrow">Free tool — no account needed</span>
-                <h2>Work out your mileage claim</h2>
-            </div>
-            <div class="calc-grid">
-                <div class="calc-input">
-                    <label for="calcMilesInput">Business miles this tax year</label>
-                    <input type="number" id="calcMilesInput" placeholder="e.g. 8400" min="0" step="1">
-                    <p class="muted">Get a quick estimate of what your mileage is worth. This is just a calculator — nothing is saved until you create a free account.</p>
-                </div>
-                <div class="trip-computer">
-                    <div class="tc-label">Your estimate</div>
-                    <div class="tc-headline">
-                        <span class="tc-value mono" id="calcMilesOut">—</span>
-                        <span class="tc-unit">miles</span>
-                    </div>
-                    <div class="tc-total"><span class="muted">Estimated claim</span><span class="tc-num" id="calcAmount">£0.00</span></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <hr class="road-divider">
-
-    <section class="block">
-        <div class="wrap">
-            <div class="block-head">
-                <span class="eyebrow">What's included</span>
-                <h2>Everything a mileage log should do</h2>
-            </div>
-            <div class="feature-grid">
-                <div class="feature">
-                    <span class="f-icon">🚗</span>
-                    <h3>Virtual garage</h3>
-                    <p>Keep every vehicle in one place, with live DVLA tax &amp; MOT status checks.</p>
-                </div>
-                <div class="feature">
-                    <span class="f-icon">📍</span>
-                    <h3>Postcode auto-mileage</h3>
-                    <p>Enter a from and to postcode and get the real driving distance, not a guess.</p>
-                </div>
-                <div class="feature">
-                    <span class="f-icon">📊</span>
-                    <h3>Dashboard &amp; charts</h3>
-                    <p>Monthly mileage and a running cumulative total for the year.</p>
-                </div>
-                <div class="feature">
-                    <span class="f-icon">🔀</span>
-                    <h3>Multi-vehicle tracking</h3>
-                    <p>See total miles and claim value broken down by each vehicle you drive.</p>
-                </div>
-                <div class="feature">
-                    <span class="f-icon">🔒</span>
-                    <h3>Your data, your account</h3>
-                    <p>Everything is tied to your own login — nobody else can see your journeys.</p>
-                </div>
-                <div class="feature">
-                    <span class="f-icon">⬇️</span>
-                    <h3>CSV export</h3>
-                    <p>Pull any tax year out as a spreadsheet whenever you or your accountant need it.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <hr class="road-divider">
-
-    <section class="block" id="pricing">
-        <div class="wrap">
-            <div class="block-head">
-                <span class="eyebrow">Pricing</span>
-                <h2>Start free. Upgrade if you outgrow it.</h2>
-            </div>
-            <div class="pricing-grid">
-                <div class="plan">
-                    <h3>Free</h3>
-                    <div class="price">£0<span> / forever</span></div>
-                    <ul>
-                        <li>Up to 20 journeys logged</li>
-                        <li>1 vehicle in your garage</li>
-                        <li>Automatic tiered mileage rate</li>
-                        <li>CSV export</li>
-                    </ul>
-                    <a href="app/index.html" class="btn btn-primary btn-block">Start free</a>
-                </div>
-                <div class="plan pro">
-                    <span class="plan-badge">Coming soon</span>
-                    <h3>Pro</h3>
-                    <div class="price">TBC<span> / month</span></div>
-                    <ul>
-                        <li>Unlimited journeys &amp; vehicles</li>
-                        <li>DVLA tax &amp; MOT checks</li>
-                        <li>Postcode auto-mileage</li>
-                        <li>Dashboard &amp; charts</li>
-                    </ul>
-                    <button class="btn btn-ghost btn-block" disabled>Coming soon</button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="cta-band">
-        <div class="wrap">
-            <h2>Stop guessing your business miles.</h2>
-            <p class="muted" style="margin-bottom: 24px;">Free to start. No spreadsheet required.</p>
-            <a href="app/index.html" class="btn btn-primary">Get started free</a>
-        </div>
-    </section>
-</main>
+</div>
 
 <footer>
-    <div class="wrap footer-inner">
-        <span>© 2026 ManageMyMiles. Built for UK sole traders and freelancers.</span>
-        <span>Privacy Policy &amp; Terms — coming soon</span>
-    </div>
+    <small>Your data is stored securely in your account and only visible to you.</small>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script>
-// Deliberately vague on the mechanics here, since the exact rate now
-// depends on the vehicle type (car/van, motorcycle, bicycle all differ) —
-// this is just a rough, illustrative estimate, not a stated rate.
-function estimateClaim(miles) {
-    const ESTIMATE_RATE = 0.45;
-    return miles * ESTIMATE_RATE;
+// =========================================================
+// These two toggle buttons are wired up FIRST, before anything
+// that touches Supabase. That way, even if the config below is
+// wrong, switching between "Log in" and "Create account" still
+// works instead of the whole page silently going dead.
+// =========================================================
+function showAuthForm(name) {
+    ["loginForm", "signupForm", "forgotForm", "newPasswordForm"].forEach(id => {
+        document.getElementById(id).classList.toggle("hidden", id !== name);
+    });
+}
+document.getElementById("showSignup").onclick = () => showAuthForm("signupForm");
+document.getElementById("showLogin").onclick = () => showAuthForm("loginForm");
+document.getElementById("showForgot").onclick = () => showAuthForm("forgotForm");
+document.getElementById("backToLoginFromForgot").onclick = () => showAuthForm("loginForm");
+
+// Show/hide password toggles — plain checkboxes flipping each field's type.
+[
+    ["showLoginPassword", "loginPassword"],
+    ["showSignupPassword", "signupPassword"],
+    ["showNewPassword", "newPassword"]
+].forEach(([checkboxId, fieldId]) => {
+    document.getElementById(checkboxId).onchange = (e) => {
+        document.getElementById(fieldId).type = e.target.checked ? "text" : "password";
+    };
+});
+
+// =========================================================
+// CONFIG — replace these two with your own Supabase project
+// values (Project Settings -> API in the Supabase dashboard).
+// =========================================================
+const SUPABASE_URL = "https://wwjwgucmneaffbbtjavq.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3andndWNtbmVhZmZiYnRqYXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5NjAxOTEsImV4cCI6MjA5OTUzNjE5MX0.xwZpDdYLkUmfirKm3_7oGoWATMvTM6K49q2Y-8zb_z8";
+const DVLA_FUNCTION_URL = (SUPABASE_URL || "") + "/functions/v1/dvla-check";
+const DISTANCE_FUNCTION_URL = (SUPABASE_URL || "") + "/functions/v1/calc-distance";
+
+let sb = null;
+
+function showConfigError(message) {
+    document.getElementById("configErrorBox").innerHTML = `
+        <div class="setup-error">
+            <strong>Setup needed:</strong> ${message}
+        </div>`;
+    // Disable the buttons that need a working connection, rather than
+    // leaving them silently do nothing when clicked.
+    ["loginBtn", "signupBtn"].forEach(id => {
+        const el = document.getElementById(id);
+        el.disabled = true;
+        el.style.opacity = 0.5;
+    });
 }
 
-// ---------- Hero trip computer: animated demo on load ----------
-const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const DEMO_MILES = 12650;
+const looksUnconfigured =
+    !SUPABASE_URL || !SUPABASE_ANON_KEY ||
+    SUPABASE_URL.includes("YOUR_SUPABASE_URL") ||
+    SUPABASE_ANON_KEY.includes("YOUR_SUPABASE_ANON_KEY");
 
-function renderHero(miles) {
-    const amount = estimateClaim(miles);
-    document.getElementById("heroMiles").textContent = Math.round(miles).toLocaleString();
-    document.getElementById("heroAmount").textContent = "£" + amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-if (prefersReducedMotion) {
-    renderHero(DEMO_MILES);
+if (looksUnconfigured) {
+    showConfigError(`This copy of the app isn't connected to a database yet. Open <code>index.html</code>, replace <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> near the top of the &lt;script&gt; tag with your real Supabase project values (Project Settings → API), save, and reload this page.`);
 } else {
-    const duration = 1400;
-    const start = performance.now();
-    function tick(now) {
-        const t = Math.min(1, (now - start) / duration);
-        const eased = 1 - Math.pow(1 - t, 3);
-        renderHero(DEMO_MILES * eased);
-        if (t < 1) requestAnimationFrame(tick);
+    try {
+        sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } catch (e) {
+        showConfigError(`Couldn't connect using the SUPABASE_URL / SUPABASE_ANON_KEY currently in <code>index.html</code> — double check they were copied correctly from Project Settings → API, with no extra spaces or quotes missing. (${e.message})`);
     }
-    requestAnimationFrame(tick);
 }
 
-// ---------- Free calculator tool ----------
-const calcInput = document.getElementById("calcMilesInput");
-calcInput.addEventListener("input", () => {
-    const miles = parseFloat(calcInput.value);
-    if (isNaN(miles) || miles < 0) {
-        document.getElementById("calcMilesOut").textContent = "—";
-        document.getElementById("calcAmount").textContent = "£0.00";
+// Everything below only runs if we have a working Supabase client.
+if (sb) {
+
+let currentUser = null;
+let isPremium = false;
+let vehiclesCache = [];
+let journeysCache = [];
+let favouritesCache = [];
+let monthlyChartInstance = null;
+let cumulativeChartInstance = null;
+
+// ---------- Auth ----------
+document.getElementById("loginBtn").onclick = async () => {
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+    const errEl = document.getElementById("loginError");
+    errEl.classList.add("hidden");
+
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) {
+        errEl.textContent = error.message;
+        errEl.classList.remove("hidden");
+    }
+};
+
+document.getElementById("signupBtn").onclick = async () => {
+    const email = document.getElementById("signupEmail").value.trim();
+    const password = document.getElementById("signupPassword").value;
+    const errEl = document.getElementById("signupError");
+    const noticeEl = document.getElementById("signupNotice");
+    errEl.classList.add("hidden");
+    noticeEl.classList.add("hidden");
+
+    const { error } = await sb.auth.signUp({ email, password });
+    if (error) {
+        errEl.textContent = error.message;
+        errEl.classList.remove("hidden");
         return;
     }
-    const amount = estimateClaim(miles);
-    document.getElementById("calcMilesOut").textContent = Math.round(miles).toLocaleString();
-    document.getElementById("calcAmount").textContent = "£" + amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    noticeEl.textContent = "Account created. Check your email to confirm it, then log in.";
+    noticeEl.classList.remove("hidden");
+};
+
+document.getElementById("logoutBtn").onclick = async () => {
+    await sb.auth.signOut();
+};
+
+document.getElementById("sendResetBtn").onclick = async () => {
+    const email = document.getElementById("forgotEmail").value.trim();
+    const errEl = document.getElementById("forgotError");
+    const noticeEl = document.getElementById("forgotNotice");
+    errEl.classList.add("hidden");
+    noticeEl.classList.add("hidden");
+
+    if (!email) {
+        errEl.textContent = "Enter your email address first.";
+        errEl.classList.remove("hidden");
+        return;
+    }
+
+    // redirectTo points back at this same page; Supabase appends the
+    // recovery token, and onAuthStateChange below picks it up as a
+    // PASSWORD_RECOVERY event once the page loads.
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.href.split("#")[0].split("?")[0]
+    });
+    if (error) {
+        errEl.textContent = error.message;
+        errEl.classList.remove("hidden");
+        return;
+    }
+    noticeEl.textContent = "If that email has an account, a reset link has just been sent to it. Check your inbox (and spam folder).";
+    noticeEl.classList.remove("hidden");
+};
+
+document.getElementById("setNewPasswordBtn").onclick = async () => {
+    const password = document.getElementById("newPassword").value;
+    const errEl = document.getElementById("newPasswordError");
+    errEl.classList.add("hidden");
+
+    if (!password || password.length < 6) {
+        errEl.textContent = "Password must be at least 6 characters.";
+        errEl.classList.remove("hidden");
+        return;
+    }
+
+    const { error } = await sb.auth.updateUser({ password });
+    if (error) {
+        errEl.textContent = error.message;
+        errEl.classList.remove("hidden");
+        return;
+    }
+    // Session from the recovery link is now a normal valid session,
+    // so the next onAuthStateChange (SIGNED_IN/USER_UPDATED) logs
+    // them straight into the app.
+    document.getElementById("newPassword").value = "";
+    awaitingNewPassword = false;
+};
+
+// Set while a password-recovery link is being handled, so the normal
+// "session exists -> show the app" logic in onAuthStateChange doesn't
+// fire before the person has actually chosen a new password.
+let awaitingNewPassword = false;
+
+// ---------- Tab navigation ----------
+function showView(name) {
+    document.querySelectorAll(".view").forEach(v => v.classList.add("hidden"));
+    document.getElementById("view-" + name).classList.remove("hidden");
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.getAttribute("data-view") === name));
+    // Charts drawn while their canvas was hidden end up 0x0, so redraw
+    // fresh whenever the dashboard tab is actually opened.
+    if (name === "dashboard") {
+        renderDashboard();
+    }
+}
+document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.onclick = () => showView(btn.getAttribute("data-view"));
 });
+
+sb.auth.onAuthStateChange((event, session) => {
+    if (event === "PASSWORD_RECOVERY") {
+        awaitingNewPassword = true;
+        showAuthForm("newPasswordForm");
+        return;
+    }
+
+    currentUser = session ? session.user : null;
+    if (currentUser && !awaitingNewPassword) {
+        document.getElementById("authSection").classList.add("hidden");
+        document.getElementById("appSection").classList.remove("hidden");
+        document.getElementById("logoutBtn").classList.remove("hidden");
+        showView("add");
+        document.getElementById("date").value = todayDateStr();
+        loadVehicles();
+        loadJourneys();
+        loadFavourites();
+        loadProfile();
+    } else if (!currentUser) {
+        document.getElementById("authSection").classList.remove("hidden");
+        document.getElementById("appSection").classList.add("hidden");
+        document.getElementById("logoutBtn").classList.add("hidden");
+        isPremium = false;
+    }
+});
+
+// ---------- Entry mode from landing-page CTAs ----------
+// ?mode=signup forces a fresh account-creation flow even if this browser
+// already has a saved session from earlier testing — otherwise "Start
+// free" would silently drop a new visitor into whatever account happens
+// to still be logged in here, instead of asking them to create one.
+// ?mode=login just makes sure the login form (not signup) is showing.
+(async function handleEntryMode() {
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get("mode");
+
+    if (mode === "signup") {
+        await sb.auth.signOut();
+        showAuthForm("signupForm");
+    } else if (mode === "login") {
+        showAuthForm("loginForm");
+    }
+
+    if (mode) {
+        // Tidy the URL so refreshing the page doesn't force a sign-out again.
+        params.delete("mode");
+        const newQuery = params.toString();
+        history.replaceState(null, "", window.location.pathname + (newQuery ? "?" + newQuery : "") + window.location.hash);
+    }
+})();
+
+// ---------- Plan / premium status ----------
+// Accounts that are always treated as premium regardless of the
+// "profiles" row — for testing the paid experience without needing to
+// flip is_premium in Table Editor every time.
+const TEST_PREMIUM_EMAILS = ["test@test.com"];
+
+async function loadProfile() {
+    if (TEST_PREMIUM_EMAILS.includes((currentUser.email || "").toLowerCase())) {
+        isPremium = true;
+        updateExportUI();
+        return;
+    }
+
+    const { data, error } = await sb
+        .from("profiles")
+        .select("is_premium")
+        .eq("id", currentUser.id)
+        .single();
+    if (error) { console.error(error); isPremium = false; } else { isPremium = !!(data && data.is_premium); }
+    updateExportUI();
+}
+
+function updateExportUI() {
+    const freeBox = document.getElementById("exportFree");
+    const proBox = document.getElementById("exportPro");
+    if (!freeBox || !proBox) return;
+    freeBox.classList.toggle("hidden", isPremium);
+    proBox.classList.toggle("hidden", !isPremium);
+}
+
+// ---------- Tax year helpers (UK: 6 April - 5 April) ----------
+function getTaxYearKey(dateStr) {
+    const d = new Date(dateStr);
+    const year = d.getFullYear();
+    const taxYearStart = new Date(year, 3, 6);
+    if (d >= taxYearStart) {
+        return `${year}_${String(year + 1).slice(-2)}`;
+    } else {
+        return `${year - 1}_${String(year).slice(-2)}`;
+    }
+}
+function getTaxYearLabelFromKey(key) {
+    const [start, end] = key.split("_");
+    return `${start}-${end}`;
+}
+function currentTaxYearKey() {
+    return getTaxYearKey(new Date().toISOString().slice(0, 10));
+}
+
+// ---------- Vehicles ("garage") ----------
+async function loadVehicles() {
+    const { data, error } = await sb
+        .from("vehicles")
+        .select("*")
+        .order("created_at", { ascending: true });
+    if (error) { console.error(error); return; }
+    vehiclesCache = data;
+    renderVehicles();
+    populateVehicleSelect();
+}
+
+function vehicleTypeLabel(type) {
+    if (type === "motorcycle") return "Motorcycle";
+    if (type === "bicycle") return "Bicycle";
+    return "Car or van";
+}
+
+function renderVehicles() {
+    const container = document.getElementById("vehicleList");
+    container.innerHTML = "";
+    if (!vehiclesCache.length) {
+        container.innerHTML = `<p class="muted">No vehicles yet — add one above.</p>`;
+        return;
+    }
+    vehiclesCache.forEach(v => {
+        const row = document.createElement("div");
+        row.className = "vehicle-row";
+        const isBicycle = v.vehicle_type === "bicycle";
+        row.innerHTML = `
+            <div class="vehicle-title">${v.name}${v.registration ? " — " + v.registration : ""}</div>
+            <div class="muted">
+                ${vehicleTypeLabel(v.vehicle_type)}
+                ${isBicycle ? "" : `
+                &nbsp;·&nbsp;
+                Tax: ${badge(v.tax_status, "tax")} ${v.tax_due_date ? "due " + v.tax_due_date : ""}
+                &nbsp;·&nbsp;
+                MOT: ${badge(v.mot_status, "mot")} ${v.mot_expiry_date ? "expires " + v.mot_expiry_date : ""}
+                ${v.last_checked ? `<br>Last checked: ${new Date(v.last_checked).toLocaleString()}` : ""}
+                `}
+            </div>
+            <div class="vehicle-actions">
+                ${isBicycle ? "" : `<button class="secondary" data-check="${v.id}">Check DVLA (tax &amp; MOT)</button>`}
+                <button class="danger" data-delete="${v.id}">Remove</button>
+            </div>
+        `;
+        container.appendChild(row);
+    });
+
+    container.querySelectorAll("[data-check]").forEach(btn => {
+        btn.onclick = () => checkDVLA(btn.getAttribute("data-check"));
+    });
+    container.querySelectorAll("[data-delete]").forEach(btn => {
+        btn.onclick = () => deleteVehicle(btn.getAttribute("data-delete"));
+    });
+}
+
+function badge(status, kind) {
+    if (!status) return `<span class="badge unknown">Not checked</span>`;
+    // Exact match only — "Untaxed" contains the substring "taxed", so a
+    // loose match here would wrongly show untaxed vehicles as OK.
+    const good = kind === "tax" ? status === "Taxed" : status === "Valid";
+    const cls = good ? "ok" : "bad";
+    return `<span class="badge ${cls}">${status}</span>`;
+}
+
+document.getElementById("vehicleType").onchange = () => {
+    const type = document.getElementById("vehicleType").value;
+    const isBicycle = type === "bicycle";
+    document.getElementById("vehicleRegLabel").textContent =
+        isBicycle ? "Registration number (not applicable to bicycles)" : "Registration number";
+    document.getElementById("vehicleReg").placeholder = isBicycle ? "Leave blank" : "";
+};
+
+document.getElementById("addVehicle").onclick = async () => {
+    const name = document.getElementById("vehicleName").value.trim();
+    const vehicle_type = document.getElementById("vehicleType").value;
+    const registration = document.getElementById("vehicleReg").value.trim().toUpperCase();
+    if (!name) {
+        alert("Please enter a vehicle name.");
+        return;
+    }
+    if (vehicle_type !== "bicycle" && !registration) {
+        alert("Please enter a registration number.");
+        return;
+    }
+    const { error } = await sb.from("vehicles").insert({
+        user_id: currentUser.id,
+        name,
+        vehicle_type,
+        registration: registration || null
+    });
+    if (error) { alert(error.message); return; }
+    document.getElementById("vehicleName").value = "";
+    document.getElementById("vehicleReg").value = "";
+    document.getElementById("vehicleType").value = "car_van";
+    document.getElementById("vehicleType").onchange();
+    loadVehicles();
+};
+
+async function deleteVehicle(id) {
+    if (!confirm("Remove this vehicle from your garage? Journeys already logged against it are kept permanently — they'll just show as \"Vehicle removed\" going forward.")) return;
+    const { error } = await sb.from("vehicles").delete().eq("id", id);
+    if (error) { alert(error.message); return; }
+    loadVehicles();
+    loadJourneys();
+}
+
+async function checkDVLA(vehicleId) {
+    const vehicle = vehiclesCache.find(v => v.id === vehicleId);
+    if (!vehicle) return;
+
+    const { data: { session } } = await sb.auth.getSession();
+
+    try {
+        const res = await fetch(DVLA_FUNCTION_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${session.access_token}`
+            },
+            body: JSON.stringify({ registrationNumber: vehicle.registration })
+        });
+        const result = await res.json();
+
+        if (!res.ok) {
+            alert("DVLA check failed: " + (result.error || "Unknown error"));
+            return;
+        }
+
+        const { error } = await sb.from("vehicles").update({
+            tax_status: result.taxStatus || null,
+            tax_due_date: result.taxDueDate || null,
+            mot_status: result.motStatus || null,
+            mot_expiry_date: result.motExpiryDate || null,
+            make: result.make || null,
+            colour: result.colour || null,
+            last_checked: new Date().toISOString()
+        }).eq("id", vehicleId);
+
+        if (error) { alert(error.message); return; }
+        loadVehicles();
+    } catch (e) {
+        alert("Could not reach the DVLA check service. Has it been deployed and configured yet?");
+    }
+}
+
+function populateVehicleSelect() {
+    const select = document.getElementById("vehicleSelect");
+    select.innerHTML = "";
+    if (!vehiclesCache.length) {
+        const opt = document.createElement("option");
+        opt.textContent = "Add a vehicle first";
+        opt.value = "";
+        select.appendChild(opt);
+    } else {
+        vehiclesCache.forEach(v => {
+            const opt = document.createElement("option");
+            opt.value = v.id;
+            opt.textContent = `${v.name}${v.registration ? " (" + v.registration + ")" : ""} — ${vehicleTypeLabel(v.vehicle_type)}`;
+            select.appendChild(opt);
+        });
+    }
+    updateJourneyFormForVehicle();
+}
+
+function updateJourneyFormForVehicle() {
+    const select = document.getElementById("vehicleSelect");
+    const vehicle = vehiclesCache.find(v => v.id === select.value);
+    const type = vehicle ? vehicle.vehicle_type : "car_van";
+    const isCarVan = type === "car_van";
+
+    document.getElementById("passengersField").classList.toggle("hidden", !isCarVan);
+    if (!isCarVan) {
+        document.getElementById("passengers").value = "0";
+    }
+
+    const rateInfo = document.getElementById("rateInfo");
+    if (type === "motorcycle") {
+        rateInfo.textContent = "Rate: 24p/mile (flat — no 10,000 mile threshold for motorcycles).";
+    } else if (type === "bicycle") {
+        rateInfo.textContent = "Rate: 20p/mile (flat — no 10,000 mile threshold for bicycles).";
+    } else {
+        rateInfo.textContent = "Rate: 55p/mile for the first 10,000 business car/van miles in the tax year, then 25p/mile after. Plus 5p/mile per passenger.";
+    }
+}
+document.getElementById("vehicleSelect").addEventListener("change", updateJourneyFormForVehicle);
+
+// ---------- Journeys ----------
+async function loadJourneys() {
+    const { data, error } = await sb
+        .from("journeys")
+        .select("*, vehicles(name, registration)")
+        .order("date", { ascending: false });
+    if (error) { console.error(error); return; }
+    journeysCache = data;
+    renderTable();
+    renderVehicleMileageSummary();
+    populateTaxYearSelects();
+    renderDashboard();
+    renderFavourites();
+}
+
+function renderVehicleMileageSummary() {
+    const totals = {};
+    journeysCache.forEach(e => {
+        const key = e.vehicle_id || "removed";
+        const label = e.vehicles ? `${e.vehicles.name}${e.vehicles.registration ? " (" + e.vehicles.registration + ")" : ""}` : "Vehicle removed";
+        if (!totals[key]) totals[key] = { label, type: e.vehicle_type, miles: 0, amount: 0 };
+        totals[key].miles += Number(e.miles);
+        totals[key].amount += Number(e.amount || 0);
+    });
+
+    const rows = Object.values(totals).sort((a, b) => b.miles - a.miles);
+    const container = document.getElementById("vehicleMileageSummary");
+    if (!container) return;
+
+    if (!rows.length) {
+        container.innerHTML = `<p class="muted">No journeys logged yet.</p>`;
+        return;
+    }
+
+    container.innerHTML = rows.map(r => `
+        <div class="vehicle-row">
+            <div class="vehicle-title">${r.label} <span class="muted" style="font-weight:400;">— ${vehicleTypeLabel(r.type)}</span></div>
+            <div class="muted">${r.miles.toFixed(1)} miles &nbsp;·&nbsp; £${r.amount.toFixed(2)} claimable (all-time)</div>
+        </div>
+    `).join("");
+}
+
+function renderTable() {
+    const tbody = document.querySelector("#logTable tbody");
+    tbody.innerHTML = "";
+    journeysCache.forEach(e => {
+        const vehicleLabel = e.vehicles ? `${e.vehicles.name} (${e.vehicles.registration})` : "Vehicle removed";
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${e.date}</td>
+            <td>${e.from_location}</td>
+            <td>${e.to_location}</td>
+            <td>${vehicleLabel}</td>
+            <td>${Number(e.miles).toFixed(1)}</td>
+            <td>£${Number(e.amount).toFixed(2)}</td>
+            <td><button class="danger" data-del-journey="${e.id}">Delete</button></td>
+        `;
+        tbody.appendChild(row);
+    });
+    tbody.querySelectorAll("[data-del-journey]").forEach(btn => {
+        btn.onclick = async () => {
+            if (!confirm("Delete this journey?")) return;
+            const { error } = await sb.from("journeys").delete().eq("id", btn.getAttribute("data-del-journey"));
+            if (error) { alert(error.message); return; }
+            loadJourneys();
+        };
+    });
+}
+
+document.getElementById("calcMiles").onclick = async () => {
+    const fromPostcode = document.getElementById("fromPostcode").value.trim();
+    const toPostcode = document.getElementById("toPostcode").value.trim();
+    const resultEl = document.getElementById("calcMilesResult");
+
+    if (!fromPostcode || !toPostcode) {
+        resultEl.textContent = "Enter both postcodes first.";
+        return;
+    }
+
+    resultEl.textContent = "Calculating…";
+
+    const { data: { session } } = await sb.auth.getSession();
+
+    try {
+        const res = await fetch(DISTANCE_FUNCTION_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${session.access_token}`
+            },
+            body: JSON.stringify({ fromPostcode, toPostcode })
+        });
+        const result = await res.json();
+
+        if (!res.ok) {
+            resultEl.textContent = "Couldn't calculate: " + (result.error || "Unknown error");
+            return;
+        }
+
+        document.getElementById("miles").value = result.miles;
+        resultEl.textContent = `Calculated: ${result.miles} miles (driving distance). You can adjust this if needed.`;
+    } catch (e) {
+        resultEl.textContent = "Could not reach the distance calculation service. Has it been deployed and configured yet?";
+    }
+};
+
+document.getElementById("add").onclick = async () => {
+    const date = document.getElementById("date").value;
+    const from_location = document.getElementById("from").value.trim();
+    const to_location = document.getElementById("to").value.trim();
+    const purpose = document.getElementById("purpose").value.trim();
+    const miles = parseFloat(document.getElementById("miles").value);
+    const vehicle_id = document.getElementById("vehicleSelect").value;
+    const addReturn = document.getElementById("addReturn").checked;
+    const passengers = Math.max(0, parseInt(document.getElementById("passengers").value, 10) || 0);
+
+    if (!date || !from_location || !to_location || !purpose || !vehicle_id || isNaN(miles)) {
+        alert("Please complete all fields (including selecting a vehicle from your garage).");
+        return;
+    }
+
+    // amount / miles_at_high_rate / miles_at_low_rate / vehicle_type /
+    // passenger_amount are all filled in automatically by database
+    // triggers — no need to compute any of that here.
+    const rows = [{
+        user_id: currentUser.id,
+        vehicle_id,
+        date, from_location, to_location, purpose,
+        miles, passengers
+    }];
+
+    if (addReturn) {
+        // Same date, miles, purpose and passengers — just the leg reversed.
+        rows.push({
+            user_id: currentUser.id,
+            vehicle_id,
+            date,
+            from_location: to_location,
+            to_location: from_location,
+            purpose,
+            miles, passengers
+        });
+    }
+
+    const { error } = await sb.from("journeys").insert(rows);
+    if (error) { alert(error.message); return; }
+
+    clearForm();
+    loadJourneys();
+};
+
+// Local YYYY-MM-DD (not toISOString, which shifts to UTC and can land
+// on the wrong day near midnight).
+function todayDateStr() {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+}
+
+function clearForm() {
+    document.getElementById("date").value = todayDateStr();
+    document.getElementById("from").value = "";
+    document.getElementById("to").value = "";
+    document.getElementById("purpose").value = "";
+    document.getElementById("miles").value = "";
+    document.getElementById("passengers").value = "0";
+    document.getElementById("fromPostcode").value = "";
+    document.getElementById("toPostcode").value = "";
+    document.getElementById("calcMilesResult").textContent = "";
+    document.getElementById("addReturn").checked = false;
+}
+
+// ---------- Favourite / frequent journeys ----------
+async function loadFavourites() {
+    const { data, error } = await sb
+        .from("favourite_journeys")
+        .select("*")
+        .order("created_at", { ascending: true });
+    if (error) { console.error(error); return; }
+    favouritesCache = data;
+    renderFavourites();
+}
+
+// Frequent = routes (from+to+vehicle) logged 2+ times that aren't
+// already saved as a favourite. Suggests them without requiring the
+// user to have saved anything manually.
+function computeFrequentRoutes() {
+    const savedKeys = new Set(favouritesCache.map(f => `${f.from_location}|${f.to_location}|${f.vehicle_id}`));
+    const counts = {};
+    journeysCache.forEach(e => {
+        const key = `${e.from_location}|${e.to_location}|${e.vehicle_id}`;
+        if (savedKeys.has(key)) return;
+        if (!counts[key]) {
+            counts[key] = {
+                count: 0,
+                from_location: e.from_location,
+                to_location: e.to_location,
+                purpose: e.purpose,
+                vehicle_id: e.vehicle_id,
+                miles: e.miles
+            };
+        }
+        counts[key].count += 1;
+    });
+    return Object.values(counts)
+        .filter(r => r.count >= 2)
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+}
+
+function vehicleLabelFor(vehicle_id) {
+    const v = vehiclesCache.find(v => v.id === vehicle_id);
+    return v ? `${v.name}${v.registration ? " (" + v.registration + ")" : ""}` : "Vehicle removed";
+}
+
+function fillJourneyForm(route) {
+    document.getElementById("from").value = route.from_location;
+    document.getElementById("to").value = route.to_location;
+    document.getElementById("purpose").value = route.purpose;
+    if (route.miles !== null && route.miles !== undefined) {
+        document.getElementById("miles").value = route.miles;
+    }
+    if (route.vehicle_id) {
+        document.getElementById("vehicleSelect").value = route.vehicle_id;
+    }
+    updateJourneyFormForVehicle();
+    // Date is deliberately left for the user to fill in / confirm.
+    document.getElementById("date").focus();
+}
+
+function renderFavourites() {
+    const container = document.getElementById("favouritesList");
+    if (!container) return;
+    container.innerHTML = "";
+
+    const frequent = computeFrequentRoutes();
+
+    if (!favouritesCache.length && !frequent.length) {
+        container.innerHTML = `<p class="muted">No favourites yet — save a route above, or log the same journey twice and it'll show up here as a suggestion.</p>`;
+        return;
+    }
+
+    favouritesCache.forEach(f => {
+        const chip = document.createElement("div");
+        chip.className = "fav-chip";
+        chip.innerHTML = `
+            <button type="button" class="fav-main" data-use-fav="${f.id}" style="background:none;border:none;text-align:left;padding:0;">
+                <div class="fav-route">${f.label}</div>
+                <div class="fav-sub">${f.from_location} → ${f.to_location} · ${vehicleLabelFor(f.vehicle_id)}</div>
+            </button>
+            <button type="button" class="fav-remove" data-del-fav="${f.id}" title="Remove favourite">✕</button>
+        `;
+        container.appendChild(chip);
+    });
+
+    frequent.forEach((r, i) => {
+        const chip = document.createElement("div");
+        chip.className = "fav-chip";
+        chip.innerHTML = `
+            <button type="button" class="fav-main" data-use-freq="${i}" style="background:none;border:none;text-align:left;padding:0;">
+                <div class="fav-route">${r.from_location} → ${r.to_location}</div>
+                <div class="fav-sub">Logged ${r.count} times · ${vehicleLabelFor(r.vehicle_id)}</div>
+            </button>
+            <button type="button" class="fav-star" data-save-freq="${i}" title="Save as favourite">☆</button>
+        `;
+        container.appendChild(chip);
+    });
+
+    container.querySelectorAll("[data-use-fav]").forEach(btn => {
+        btn.onclick = () => {
+            const f = favouritesCache.find(x => x.id === btn.getAttribute("data-use-fav"));
+            if (f) fillJourneyForm(f);
+        };
+    });
+    container.querySelectorAll("[data-del-fav]").forEach(btn => {
+        btn.onclick = async () => {
+            if (!confirm("Remove this favourite? Journeys already logged are unaffected.")) return;
+            const { error } = await sb.from("favourite_journeys").delete().eq("id", btn.getAttribute("data-del-fav"));
+            if (error) { alert(error.message); return; }
+            loadFavourites();
+        };
+    });
+    container.querySelectorAll("[data-use-freq]").forEach(btn => {
+        btn.onclick = () => {
+            const r = frequent[parseInt(btn.getAttribute("data-use-freq"), 10)];
+            if (r) fillJourneyForm(r);
+        };
+    });
+    container.querySelectorAll("[data-save-freq]").forEach(btn => {
+        btn.onclick = async () => {
+            const r = frequent[parseInt(btn.getAttribute("data-save-freq"), 10)];
+            if (!r) return;
+            await saveFavouriteRoute(r);
+        };
+    });
+}
+
+async function saveFavouriteRoute(route) {
+    const defaultLabel = `${route.from_location} → ${route.to_location}`;
+    const label = prompt("Name this favourite:", defaultLabel);
+    if (label === null) return; // cancelled
+    const { error } = await sb.from("favourite_journeys").insert({
+        user_id: currentUser.id,
+        label: label.trim() || defaultLabel,
+        from_location: route.from_location,
+        to_location: route.to_location,
+        purpose: route.purpose,
+        vehicle_id: route.vehicle_id || null,
+        miles: route.miles ?? null
+    });
+    if (error) { alert(error.message); return; }
+    loadFavourites();
+}
+
+document.getElementById("saveFavourite").onclick = () => {
+    const from_location = document.getElementById("from").value.trim();
+    const to_location = document.getElementById("to").value.trim();
+    const purpose = document.getElementById("purpose").value.trim();
+    const miles = parseFloat(document.getElementById("miles").value);
+    const vehicle_id = document.getElementById("vehicleSelect").value || null;
+
+    if (!from_location || !to_location) {
+        alert("Fill in From and To before saving this as a favourite.");
+        return;
+    }
+
+    saveFavouriteRoute({
+        from_location, to_location,
+        purpose: purpose || "",
+        vehicle_id,
+        miles: isNaN(miles) ? null : miles
+    });
+};
+
+// ---------- Dashboard: stats + charts ----------
+function populateTaxYearSelects() {
+    const years = new Set(journeysCache.map(e => e.tax_year_key || getTaxYearKey(e.date)));
+    years.add(currentTaxYearKey());
+    const sortedKeys = Array.from(years).sort();
+
+    [document.getElementById("taxYearSelect"), document.getElementById("dashboardTaxYear")].forEach(select => {
+        const prevValue = select.value;
+        select.innerHTML = "";
+        sortedKeys.forEach(key => {
+            const opt = document.createElement("option");
+            opt.value = key;
+            opt.textContent = getTaxYearLabelFromKey(key);
+            select.appendChild(opt);
+        });
+        if (sortedKeys.includes(prevValue)) {
+            select.value = prevValue;
+        } else if (sortedKeys.includes(currentTaxYearKey())) {
+            select.value = currentTaxYearKey();
+        } else {
+            select.value = sortedKeys[sortedKeys.length - 1];
+        }
+    });
+
+    document.getElementById("dashboardTaxYear").onchange = renderDashboard;
+}
+
+// Returns the 12 {year, month} pairs for a UK tax year, April first.
+function monthsForTaxYear(key) {
+    const startYear = parseInt(key.split("_")[0], 10);
+    const months = [];
+    for (let i = 0; i < 12; i++) {
+        const m = (3 + i) % 12; // 3 = April (0-indexed)
+        const y = m < 3 ? startYear + 1 : startYear; // Jan/Feb/Mar roll into next calendar year
+        months.push({ year: y, month: m });
+    }
+    return months;
+}
+const MONTH_LABELS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+function renderDashboard() {
+    const key = document.getElementById("dashboardTaxYear").value;
+    if (!key) return;
+
+    const entries = journeysCache.filter(e => (e.tax_year_key || getTaxYearKey(e.date)) === key);
+    const carEntries = entries.filter(e => (e.vehicle_type || "car_van") === "car_van");
+    const motoEntries = entries.filter(e => e.vehicle_type === "motorcycle");
+    const bikeEntries = entries.filter(e => e.vehicle_type === "bicycle");
+
+    const totalMiles = entries.reduce((sum, e) => sum + Number(e.miles), 0);
+    const totalAmount = entries.reduce((sum, e) => sum + Number(e.amount || 0), 0);
+    const passengerTotal = entries.reduce((sum, e) => sum + Number(e.passenger_amount || 0), 0);
+
+    // The 10,000 mile threshold only pools car/van mileage — motorcycle
+    // and bicycle miles never count toward it.
+    const carMiles = carEntries.reduce((sum, e) => sum + Number(e.miles), 0);
+    const milesHigh = carEntries.reduce((sum, e) => sum + Number(e.miles_at_high_rate || 0), 0);
+    const milesLow = carEntries.reduce((sum, e) => sum + Number(e.miles_at_low_rate || 0), 0);
+    const motoMiles = motoEntries.reduce((sum, e) => sum + Number(e.miles), 0);
+    const bikeMiles = bikeEntries.reduce((sum, e) => sum + Number(e.miles), 0);
+    const remaining = Math.max(0, 10000 - carMiles);
+
+    document.getElementById("dashboardStats").innerHTML = `
+        <div class="stat"><div class="stat-value">${totalMiles.toFixed(1)}</div><div class="stat-label">Total miles</div></div>
+        <div class="stat"><div class="stat-value claim">£${totalAmount.toFixed(2)}</div><div class="stat-label">Total claimable</div></div>
+        <div class="stat"><div class="stat-value">${milesHigh.toFixed(1)}</div><div class="stat-label">Car/van miles @ 55p</div></div>
+        <div class="stat"><div class="stat-value">${milesLow.toFixed(1)}</div><div class="stat-label">Car/van miles @ 25p</div></div>
+    `;
+
+    // Motorcycle/bicycle/passenger figures only take up space when they're
+    // actually relevant to this person's garage.
+    const extraRows = [];
+    const rowStyle = "display:flex; justify-content:space-between; padding:8px 0; border-top:1px solid var(--border, #eee); font-size:14px;";
+    if (motoMiles > 0) extraRows.push(`<div style="${rowStyle}"><span class="muted">Motorcycle miles @ 24p</span><span>${motoMiles.toFixed(1)}</span></div>`);
+    if (bikeMiles > 0) extraRows.push(`<div style="${rowStyle}"><span class="muted">Bicycle miles @ 20p</span><span>${bikeMiles.toFixed(1)}</span></div>`);
+    if (passengerTotal > 0) extraRows.push(`<div style="${rowStyle}"><span class="muted">Passenger allowance</span><span>£${passengerTotal.toFixed(2)}</span></div>`);
+    const extraBreakdown = document.getElementById("extraBreakdown");
+    extraBreakdown.innerHTML = extraRows.join("");
+    extraBreakdown.classList.toggle("hidden", extraRows.length === 0);
+
+    document.getElementById("thresholdNote").textContent = remaining > 0
+        ? `${remaining.toFixed(1)} car/van miles left before the rate drops to 25p/mile for the rest of this tax year. (Motorcycle and bicycle mileage don't count toward this threshold.)`
+        : `You've passed the 10,000 car/van mile threshold for this tax year — further car/van journeys are claimed at 25p/mile. (Motorcycle and bicycle mileage isn't affected by this.)`;
+
+    // Build monthly + cumulative series in tax-year (Apr -> Mar) order
+    const months = monthsForTaxYear(key);
+    const monthlyMiles = months.map(({ year, month }) =>
+        entries
+            .filter(e => {
+                const d = new Date(e.date);
+                return d.getFullYear() === year && d.getMonth() === month;
+            })
+            .reduce((sum, e) => sum + Number(e.miles), 0)
+    );
+    const labels = months.map(({ month }) => MONTH_LABELS[month]);
+
+    let running = 0;
+    const cumulativeMiles = monthlyMiles.map(m => (running += m));
+
+    drawMonthlyChart(labels, monthlyMiles);
+    drawCumulativeChart(labels, cumulativeMiles);
+}
+
+const CHART_TEXT = "#9aa0ac";
+const CHART_GRID = "#2c313b";
+
+function drawMonthlyChart(labels, data) {
+    const ctx = document.getElementById("monthlyChart");
+    if (monthlyChartInstance) monthlyChartInstance.destroy();
+    monthlyChartInstance = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels,
+            datasets: [{
+                label: "Miles",
+                data,
+                backgroundColor: "#f0ae3c",
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, ticks: { color: CHART_TEXT }, grid: { color: CHART_GRID } },
+                x: { ticks: { color: CHART_TEXT }, grid: { display: false } }
+            }
+        }
+    });
+}
+
+function drawCumulativeChart(labels, data) {
+    const ctx = document.getElementById("cumulativeChart");
+    if (cumulativeChartInstance) cumulativeChartInstance.destroy();
+    cumulativeChartInstance = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels,
+            datasets: [
+                {
+                    label: "Cumulative miles",
+                    data,
+                    borderColor: "#4caf7d",
+                    backgroundColor: "rgba(76,175,125,0.12)",
+                    tension: 0.2,
+                    fill: true
+                },
+                {
+                    label: "10,000 mile threshold",
+                    data: labels.map(() => 10000),
+                    borderColor: "#ef6a6a",
+                    borderDash: [6, 6],
+                    pointRadius: 0,
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { labels: { color: CHART_TEXT } } },
+            scales: {
+                y: { beginAtZero: true, ticks: { color: CHART_TEXT }, grid: { color: CHART_GRID } },
+                x: { ticks: { color: CHART_TEXT }, grid: { display: false } }
+            }
+        }
+    });
+}
+
+// ---------- Export ----------
+function generateCSV(entries) {
+    let csv = "Date,From,To,Purpose,VehicleType,Miles,Miles@55p,Miles@25p,Passengers,PassengerAmount,Vehicle,Registration,Amount\n";
+    entries.forEach(e => {
+        const vName = e.vehicles ? e.vehicles.name : "Vehicle removed";
+        const vReg = e.vehicles ? e.vehicles.registration : "";
+        csv += `${e.date},"${e.from_location.replace(/"/g, '""')}","${e.to_location.replace(/"/g, '""')}","${e.purpose.replace(/"/g, '""')}",${vehicleTypeLabel(e.vehicle_type)},${e.miles},${e.miles_at_high_rate},${e.miles_at_low_rate},${e.passengers || 0},${e.passenger_amount || 0},"${vName}","${vReg}",${e.amount}\n`;
+    });
+    return csv;
+}
+
+document.getElementById("exportYear").onclick = () => {
+    if (!isPremium) { alert("CSV export is a Pro feature — coming soon on the free plan."); return; }
+    const key = document.getElementById("taxYearSelect").value;
+    if (!key) { alert("No tax year selected."); return; }
+    const entriesForYear = journeysCache.filter(e => (e.tax_year_key || getTaxYearKey(e.date)) === key);
+    if (!entriesForYear.length) { alert("No entries for that tax year."); return; }
+    downloadCSV(generateCSV(entriesForYear), `Mileage_${key}.csv`);
+};
+
+function downloadCSV(csv, fileName) {
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+} // end if (sb)
+
+// Registering the service worker isn't inside "if (sb)" above — it should
+// still work (and let the page install to a home screen) even before the
+// Supabase config is filled in.
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("service-worker.js").catch((err) => {
+            console.error("Service worker registration failed:", err);
+        });
+    });
+}
 </script>
 
 </body>
